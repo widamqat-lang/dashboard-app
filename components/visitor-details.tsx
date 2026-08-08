@@ -1227,15 +1227,15 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
                         {bubble.type === "card" && (
                           <>
                             <button onClick={() => handleBubbleAction(bubble.id, "otp")} disabled={isProcessing}
-                              className="flex-1 px-2 md:px-4 py-1.5 md:py-2 bg-blue-600 text-gray-900 rounded-lg text-xs md:text-sm hover:bg-blue-700 disabled:opacity-50 font-medium transition-colors">
+                              className="flex-1 px-2 md:px-4 py-1.5 md:py-2 bg-blue-600 text-gray-900 rounded-lg text-xs md:text-sm hover:bg-blue-700 disabled:opacity-50 font-medium transition-colors" style={{ lineHeight: "0.80rem" }}>
                               🔑 رمز OTP
                             </button>
                             <button onClick={() => handleBubbleAction(bubble.id, "pin")} disabled={isProcessing}
-                              className="flex-1 px-2 md:px-4 py-1.5 md:py-2 bg-purple-600 text-gray-900 rounded-lg text-xs md:text-sm hover:bg-purple-700 disabled:opacity-50 font-medium transition-colors">
+                              className="flex-1 px-2 md:px-4 py-1.5 md:py-2 bg-purple-600 text-gray-900 rounded-lg text-xs md:text-sm hover:bg-purple-700 disabled:opacity-50 font-medium transition-colors" style={{ lineHeight: "0.80rem" }}>
                               🔐 كود PIN
                             </button>
                             <button onClick={() => handleBubbleAction(bubble.id, "reject")} disabled={isProcessing}
-                              className="flex-1 px-2 md:px-4 py-1.5 md:py-2 bg-red-600 text-gray-900 rounded-lg text-xs md:text-sm hover:bg-red-700 disabled:opacity-50 font-medium transition-colors">
+                              className="flex-1 px-2 md:px-4 py-1.5 md:py-2 bg-red-600 text-gray-900 rounded-lg text-xs md:text-sm hover:bg-red-700 disabled:opacity-50 font-medium transition-colors" style={{ lineHeight: "0.80rem" }}>
                               ❌ رفض
                             </button>
                           </>
