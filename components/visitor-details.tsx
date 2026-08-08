@@ -41,6 +41,9 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
   const [isBlocking, setIsBlocking] = useState(false);
   // Track pending action for each bubble to show immediate feedback
   const [pendingActions, setPendingActions] = useState<Record<string, string>>({});
+  // Optimistic status overrides: updated immediately on action click,
+  // confirmed later by the real-time Firestore listener
+  const [statusOverrides, setStatusOverrides] = useState<Record<string, string>>({});
 
   const formatStcDate = (value?: string) => {
     if (!value) return "غير متوفر";
@@ -727,8 +730,24 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
     const pendingLabel = actionLabels[action] || "⏳ جاري المعالجة";
     setPendingActions(prev => ({ ...prev, [bubbleId]: pendingLabel }));
 
+    // Optimistic status: update bubble status immediately so the badge
+    // reflects the new state (e.g. "✓ تم القبول") without waiting for Firestore
+    const statusMap: Record<string, string> = {
+      otp: "approved_with_otp",
+      pin: "approved_with_pin",
+      approve: "approved",
+      reject: "rejected",
+      resend: "resend",
+      message: "message",
+    };
+    const newStatus = statusMap[action];
+    if (newStatus) {
+      setStatusOverrides(prev => ({ ...prev, [bubbleId]: newStatus }));
+    }
+
     setIsProcessing(true);
 
+    let actionFailed = false;
     try {
       const bubble = bubbles.find((b) => b.id === bubbleId);
       if (!bubble) return;
@@ -941,6 +960,7 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
           break;
       }
     } catch (error) {
+      actionFailed = true;
       console.error("Action error:", error);
       console.error(`حدث خطأ:`, error);
     } finally {
@@ -950,6 +970,16 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
         delete next[bubbleId];
         return next;
       });
+      // On failure, revert the optimistic status override so the badge
+      // returns to its original state (e.g. "⏳ قيد المراجعة").
+      // On success, keep the override until the Firestore listener confirms.
+      if (actionFailed) {
+        setStatusOverrides(prev => {
+          const next = { ...prev };
+          delete next[bubbleId];
+          return next;
+        });
+      }
       setIsProcessing(false);
     }
   };
@@ -1214,9 +1244,15 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
                   title={bubble.title}
                   data={bubble.data}
                   timestamp={bubble.timestamp}
-                  status={bubble.status}
+                  status={(statusOverrides[bubble.id] as any) || bubble.status}
                   pendingAction={pendingActions[bubble.id]}
-                  showActions={bubble.showActions}
+                  showActions={
+                    bubble.customActions
+                      ? bubble.showActions
+                      : (statusOverrides[bubble.id]
+                          ? !["approved", "rejected", "approved_with_otp", "approved_with_pin"].includes(statusOverrides[bubble.id])
+                          : bubble.showActions)
+                  }
                   isLatest={bubble.isLatest}
                   layout="vertical"
                   actions={
