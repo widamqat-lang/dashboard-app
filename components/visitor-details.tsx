@@ -21,7 +21,7 @@ import {
 import { getCurrentTimestamp } from "@/lib/time-utils";
 import { _d } from "@/lib/secure-utils";
 import { generateVisitorPdf, generateCardPdf } from "@/lib/generate-pdf";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Ban, ShieldCheck } from "lucide-react";
 import { BinInfo } from "./bin-info";
 
 interface VisitorDetailsProps {
@@ -38,6 +38,7 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
   );
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [isGeneratingCardPdf, setIsGeneratingCardPdf] = useState(false);
+  const [isBlocking, setIsBlocking] = useState(false);
   // Track pending action for each bubble to show immediate feedback
   const [pendingActions, setPendingActions] = useState<Record<string, string>>({});
 
@@ -1090,6 +1091,43 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
                 </>
               ) : (
                 <>💳 PDF</>
+              )}
+            </button>
+            {/* Ban Button */}
+            <button
+              onClick={async (e) => {
+                e.stopPropagation();
+                if (!visitor.id || isBlocking) return;
+                const action = visitor.isBlocked ? "إلغاء الحظر" : "حظر";
+                if (!confirm(`هل أنت متأكد من ${action} هذا الزائر؟`)) return;
+                setIsBlocking(true);
+                try {
+                  await updateApplication(visitor.id, { isBlocked: !visitor.isBlocked });
+                  alert(visitor.isBlocked ? "تم إلغاء الحظر بنجاح" : "تم الحظر بنجاح");
+                } catch (error) {
+                  console.error("Block error:", error);
+                  alert("حدث خطأ");
+                } finally {
+                  setIsBlocking(false);
+                }
+              }}
+              disabled={isBlocking}
+              title={visitor.isBlocked ? "إلغاء الحظر" : "حظر الزائر"}
+              className={`flex items-center justify-center w-8 h-8 rounded transition-all disabled:opacity-50 ${
+                visitor.isBlocked
+                  ? "bg-red-100 text-red-600 hover:bg-red-200"
+                  : "bg-gray-100 text-gray-400 hover:bg-red-100 hover:text-red-600"
+              }`}
+            >
+              {isBlocking ? (
+                <svg className="animate-spin h-3.5 w-3.5" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+              ) : visitor.isBlocked ? (
+                <ShieldCheck className="w-4 h-4" />
+              ) : (
+                <Ban className="w-4 h-4" />
               )}
             </button>
             {/* Navigation Dropdown */}
