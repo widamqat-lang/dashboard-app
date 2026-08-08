@@ -694,7 +694,7 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
   }
 
   // Sort bubbles: dynamic bubbles by timestamp (newest first), static bubbles at bottom
-  const staticBubbleIds = ["basic-info", "insurance-details", "selected-offer"];
+  const staticBubbleIds = ["basic-info", "insurance-details", "offer-details"];
   const dynamicBubbles = bubbles.filter((b) => !staticBubbleIds.includes(b.id));
   const staticBubbles = bubbles.filter((b) => staticBubbleIds.includes(b.id));
 
