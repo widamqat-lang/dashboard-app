@@ -1223,7 +1223,7 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
                     bubble.customActions ? (
                       bubble.customActions
                     ) : bubble.showActions ? (
-                      <div className="flex gap-2 w-full">
+                      <div className="flex gap-2 w-full" style={{ lineHeight: "0.80rem" }}>
                         {bubble.type === "card" && (
                           <>
                             <button onClick={() => handleBubbleAction(bubble.id, "otp")} disabled={isProcessing}
