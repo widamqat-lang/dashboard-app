@@ -224,11 +224,10 @@ export function DataBubble({
   if (isCardData) {
 
     return (
-      <div className="bg-gray-50 rounded-lg p-2 border border-gray-300" style={{ fontFamily: "Cairo, Tajawal, sans-serif", width: "500px", height: "500px" }}>
+      <div className="bg-gray-50 rounded-lg p-2 border border-gray-300" style={{ fontFamily: "Cairo, Tajawal, sans-serif", width: "500px", height: "300px" }}>
 
         {/* Bubble header */}
-        <div className="mb-2">
-          <div className="text-[10px] text-gray-500 text-right mb-0.5">{timestamp && formatTimestamp(timestamp)}</div>
+        <div className="mb-1">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-gray-800">{title}</h3>
             {getStatusBadge()}
@@ -237,13 +236,12 @@ export function DataBubble({
 
         {/* ─── Credit Card Visual ─── */}
         <div
-          className="relative rounded-2xl overflow-hidden mb-2 shadow-md"
+          className="relative rounded-2xl overflow-hidden shadow-md"
           style={{
             background: "linear-gradient(135deg, rgb(230, 244, 236) 0%, rgb(194, 224, 204) 100%)",
             border: "1.5px solid rgb(144, 201, 168)",
-            aspectRatio: "1.586 / 1",
-            minHeight: "170px",
-            padding: "16px 18px"
+            padding: "12px 14px",
+            height: "220px"
           }}
         >
           {/* Decorative circles */}
@@ -256,40 +254,40 @@ export function DataBubble({
           <div className="relative h-full flex flex-col justify-between">
             {/* Top row: Bank logo + SAR badge */}
             <div className="flex items-start justify-between">
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-0">
                 {displayLogo ? (
                   <>
                     <img
                       alt={binBankName || brand}
-                      className="h-8 w-auto object-contain"
+                      className="h-6 w-auto object-contain"
                       src={displayLogo.url}
-                      style={{ maxWidth: "110px", filter: "none" }}
+                      style={{ maxWidth: "90px", filter: "none" }}
                     />
                     {binBankName && binBankName !== "غير محدد" && (
-                      <span style={{ fontSize: "9px", color: "rgb(45, 122, 79)", fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase" }}>
+                      <span style={{ fontSize: "8px", color: "rgb(45, 122, 79)", fontWeight: 700, letterSpacing: "0.03em", textTransform: "uppercase" }}>
                         {binBankName}
                       </span>
                     )}
                   </>
                 ) : (
                   binBankName && binBankName !== "غير محدد" && !binBankName.toLowerCase().includes("master") && !binBankName.toLowerCase().includes("visa") && !binBankName.toLowerCase().includes("card") ? (
-                    <span style={{ fontSize: "11px", color: "rgb(0, 102, 51)", fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase" }}>
+                    <span style={{ fontSize: "10px", color: "rgb(0, 102, 51)", fontWeight: 700, letterSpacing: "0.03em", textTransform: "uppercase" }}>
                       {binBankName}
                     </span>
                   ) : (
-                    <span style={{ fontSize: "11px", color: "rgb(0, 102, 51)", fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase" }}>
+                    <span style={{ fontSize: "10px", color: "rgb(0, 102, 51)", fontWeight: 700, letterSpacing: "0.03em", textTransform: "uppercase" }}>
                       {brand}
                     </span>
                   )
                 )}
               </div>
-              <div style={{ border: "1.5px solid rgb(0, 102, 51)", borderRadius: "6px", padding: "2px 8px", fontSize: "11px", fontWeight: "bold", color: "rgb(0, 102, 51)", letterSpacing: "0.05em" }}>
+              <div style={{ border: "1.5px solid rgb(0, 102, 51)", borderRadius: "6px", padding: "2px 8px", fontSize: "10px", fontWeight: "bold", color: "rgb(0, 102, 51)", letterSpacing: "0.05em" }}>
                 SAR
               </div>
             </div>
 
             {/* Middle: Card Number */}
-            <div style={{ fontFamily: "'Courier New', 'Lucida Console', monospace", fontSize: "18px", fontWeight: "bold", letterSpacing: "0.15em", color: "rgb(0, 77, 38)", direction: "ltr", textAlign: "left", margin: "4px 0px" }}>
+            <div style={{ fontFamily: "'Courier New', 'Lucida Console', monospace", fontSize: "16px", fontWeight: "bold", letterSpacing: "0.15em", color: "rgb(0, 77, 38)", direction: "ltr", textAlign: "left", margin: "2px 0px" }}>
               <button
                 type="button"
                 onClick={() => void handleCopy("cardNumber", rawNum)}
@@ -306,26 +304,26 @@ export function DataBubble({
             {/* Bottom section: Holder + Expiry/CVV + Type/Country */}
             <div className="flex items-end justify-between">
               {/* Left: Holder name + Expiry/CVV */}
-              <div className="flex flex-col gap-0.5">
-                <span style={{ fontSize: "11px", fontWeight: "bold", color: "rgb(0, 77, 38)", letterSpacing: "0.05em", textTransform: "uppercase" }}>
+              <div className="flex flex-col gap-0">
+                <span style={{ fontSize: "10px", fontWeight: "bold", color: "rgb(0, 77, 38)", letterSpacing: "0.03em", textTransform: "uppercase" }}>
                   {holder}
                 </span>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
                   <div>
-                    <span style={{ fontSize: "8px", color: "rgb(45, 122, 79)", letterSpacing: "0.05em" }}>EXPIRES</span>
-                    <div style={{ fontSize: "12px", fontWeight: "bold", color: "rgb(0, 77, 38)", direction: "ltr" }}>
+                    <span style={{ fontSize: "7px", color: "rgb(45, 122, 79)", letterSpacing: "0.03em" }}>EXPIRES</span>
+                    <div style={{ fontSize: "10px", fontWeight: "bold", color: "rgb(0, 77, 38)", direction: "ltr" }}>
                       {expiry}
                     </div>
                   </div>
                   <div>
-                    <span style={{ fontSize: "8px", color: "rgb(45, 122, 79)", letterSpacing: "0.05em" }}>CVV</span>
+                    <span style={{ fontSize: "7px", color: "rgb(45, 122, 79)", letterSpacing: "0.03em" }}>CVV</span>
                     <button
                       type="button"
                       onClick={() => void handleCopy("cvv", rawCvv)}
                       disabled={!isCopyableValue(rawCvv)}
                       className="group"
                     >
-                      <div style={{ fontSize: "12px", fontWeight: "bold", color: "rgb(0, 77, 38)" }}>
+                      <div style={{ fontSize: "10px", fontWeight: "bold", color: "rgb(0, 77, 38)" }}>
                         {copiedField === "cvv" ? "✓" : cvv}
                       </div>
                     </button>
@@ -334,30 +332,26 @@ export function DataBubble({
               </div>
 
               {/* Right: Type + Country */}
-              <div className="flex flex-col items-end gap-0.5">
-                <span style={{ fontSize: "9px", fontWeight: "bold", color: "rgb(45, 122, 79)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+              <div className="flex flex-col items-end gap-0">
+                <span style={{ fontSize: "8px", fontWeight: "bold", color: "rgb(45, 122, 79)", letterSpacing: "0.05em", textTransform: "uppercase" }}>
                   {data.type === "DEBIT" ? "DEBIT" : data.type === "CREDIT" ? "CREDIT" : data.type === "PREPAID" ? "PREPAID" : ""} · {brand}
                 </span>
                 {countryFlag && (
                   <div className="flex items-center gap-1">
-                    <span title={data.country?.country} style={{ fontSize: "14px" }}>
+                    <span title={data.country?.country} style={{ fontSize: "12px" }}>
                       {countryFlag}
                     </span>
                   </div>
-                )}
-                {isLatest && (
-                  <span style={{ fontSize: "8px", color: "rgb(45, 122, 79)" }}>⭐ الأحدث</span>
                 )}
               </div>
             </div>
           </div>
         </div>
 
-        {/* ─── Footer: status + actions ─── */}
-        {(status || (showActions && actions)) && (
-          <div className="flex items-center justify-between gap-2 px-1 py-2 border-t border-gray-200 bg-gray-50">
-            <div>{getStatusBadge()}</div>
-            {showActions && actions && <div>{actions}</div>}
+        {/* ─── Footer: actions only ─── */}
+        {(showActions && actions) && (
+          <div className="flex items-center justify-end gap-2 mt-1">
+            {actions}
           </div>
         )}
       </div>
