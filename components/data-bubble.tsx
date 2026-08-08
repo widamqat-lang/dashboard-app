@@ -228,7 +228,7 @@ export function DataBubble({
 
         {/* Bubble header */}
         <div className="mb-1">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-center">
             <h3 className="text-sm font-bold text-gray-800">{title}</h3>
             {getStatusBadge()}
           </div>
