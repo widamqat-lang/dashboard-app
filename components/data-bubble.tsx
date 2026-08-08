@@ -233,10 +233,10 @@ export function DataBubble({
   if (isCardData) {
 
     return (
-      <div className="bg-white rounded-2xl overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.07)] border border-gray-100 flex-shrink-0" style={{ fontFamily: "Cairo, Tajawal, sans-serif", width: "500px", height: "400px", display: "flex", flexDirection: "column" }}>
+      <div className="bg-white rounded-2xl overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.07)] border border-gray-100 flex-shrink-0" style={{ fontFamily: "Cairo, Tajawal, sans-serif", width: "500px", height: "340px", display: "flex", flexDirection: "column" }}>
 
         {/* Bubble header */}
-        <div className="flex items-center justify-center px-4 py-2.5 border-b border-gray-100 relative">
+        <div className="flex items-center justify-center px-4 py-2 border-b border-gray-100 relative">
           <span className="text-sm font-bold text-gray-800">{title}</span>
           <div className="absolute right-4 flex items-center gap-2">
             {isLatest && (
@@ -248,7 +248,7 @@ export function DataBubble({
           </div>
         </div>
 
-        <div className="flex-1 p-4 flex items-center justify-center">
+        <div className="flex-1 p-3 flex items-center justify-center">
           {/* ─── Credit Card Visual with dynamic background ─── */}
           <div
             className="relative rounded-2xl overflow-hidden"
@@ -260,41 +260,41 @@ export function DataBubble({
             }}
           >
             {/* Sheen overlay */}
-            <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.25) 0%, transparent 55%)" }} />
+            <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%)" }} />
 
             {/* Card inner content */}
-            <div className="relative h-full flex flex-col px-5 py-4 justify-between" style={{ color: getTextColor() }}>
+            <div className="relative h-full flex flex-col px-4 py-3 justify-between" style={{ color: getTextColor() }}>
 
               {/* Top row: SAR badge + Country + Bank logo */}
               <div className="flex items-end justify-end" style={{ direction: "rtl" }}>
                 <div className="flex items-center gap-1">
                   {binCountry && binCountry !== "غير محدد" && (
                     <div
-                      className="text-xs font-bold"
-                      style={{ border: "2px solid rgba(255,255,255,0.4)", borderRadius: "8px", padding: "2px 10px", background: "rgba(0,0,0,0.25)", color: "white" }}
+                      className="text-[9px] font-bold"
+                      style={{ border: "1.5px solid rgba(255,255,255,0.35)", borderRadius: "6px", padding: "1px 7px", background: "rgba(0,0,0,0.2)", color: "white" }}
                     >
                       {binCountry}
                     </div>
                   )}
                   <div
-                    className="text-sm font-bold"
-                    style={{ border: "2px solid rgba(255,255,255,0.4)", borderRadius: "8px", padding: "4px 12px", background: "rgba(0,0,0,0.25)", color: "white" }}
+                    className="text-[10px] font-bold"
+                    style={{ border: "1.5px solid rgba(255,255,255,0.35)", borderRadius: "6px", padding: "2px 9px", background: "rgba(0,0,0,0.2)", color: "white" }}
                   >
                     SAR
                   </div>
                 </div>
                 {bankLogoUrl ? (
-                  <div style={{ background: "#fff", borderRadius: "8px", padding: "4px 10px", display: "inline-flex", alignItems: "center", boxShadow: "0 1px 4px rgba(0,0,0,0.15)" }}>
-                    <img src={bankLogoUrl} alt={binBankName} className="h-8 max-w-[120px] object-contain" />
+                  <div style={{ background: "rgba(255,255,255,0.1)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", borderRadius: "6px", padding: "3px 8px", display: "inline-flex", alignItems: "center", border: "1px solid rgba(255,255,255,0.2)" }}>
+                    <img src={bankLogoUrl} alt={binBankName} className="h-5 max-w-[90px] object-contain" style={{ filter: "brightness(0) invert(1)" }} />
                   </div>
                 ) : (
                   binBankName && binBankName !== "غير محدد" && !binBankName.toLowerCase().includes("master") && !binBankName.toLowerCase().includes("visa") && !binBankName.toLowerCase().includes("card") ? (
-                    <span className="font-extrabold text-white text-base" style={{ direction: "ltr", textShadow: "0 1px 2px rgba(0,0,0,0.3)" }}>
+                    <span className="font-bold text-white text-[11px]" style={{ direction: "ltr", textShadow: "0 1px 2px rgba(0,0,0,0.3)" }}>
                       {binBankName}
                     </span>
                   ) : networkLogoUrl ? (
-                    <div style={{ background: "#fff", borderRadius: "8px", padding: "4px 10px", display: "inline-flex", alignItems: "center", boxShadow: "0 1px 4px rgba(0,0,0,0.15)" }}>
-                      <img src={networkLogoUrl} alt={brand} className="h-8 max-w-[80px] object-contain" />
+                    <div style={{ background: "rgba(255,255,255,0.1)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", borderRadius: "6px", padding: "3px 8px", display: "inline-flex", alignItems: "center", border: "1px solid rgba(255,255,255,0.2)" }}>
+                      <img src={networkLogoUrl} alt={brand} className="h-5 max-w-[65px] object-contain" style={{ filter: "brightness(0) invert(1)" }} />
                     </div>
                   ) : null
                 )}
@@ -309,24 +309,24 @@ export function DataBubble({
                   title="نسخ رقم البطاقة"
                   className="group text-center"
                 >
-                  <div className="font-mono font-bold tracking-widest group-hover:opacity-70 transition-opacity" style={{ direction: "ltr", fontSize: "26px", color: "white", textShadow: "0 2px 4px rgba(0,0,0,0.3)" }}>
+                  <div className="font-mono font-bold tracking-widest group-hover:opacity-70 transition-opacity" style={{ direction: "ltr", fontSize: "18px", color: "white", textShadow: "0 2px 4px rgba(0,0,0,0.3)" }}>
                     {cardNumber}
                   </div>
                 </button>
               </div>
 
               {/* Bottom section: Holder name + Card type (left) + Expiry + CVV (right) */}
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-1">
                 {/* Holder name */}
                 <div className="text-left" style={{ direction: "ltr" }}>
-                  <div className="font-bold text-base uppercase" style={{ color: "white", textShadow: "0 1px 2px rgba(0,0,0,0.3)" }}>{holder}</div>
+                  <div className="font-bold text-[11px] uppercase" style={{ color: "white", textShadow: "0 1px 2px rgba(0,0,0,0.3)" }}>{holder}</div>
                 </div>
 
                 {/* Card type (left) + Expiry/CVV (left) + Country/SA (right) */}
                 <div className="flex items-end justify-between">
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-1">
                     <div>
-                      <div className="text-xs font-semibold" style={{ color: "rgba(255,255,255,0.7)" }}>CVV  EXPIRES</div>
+                      <div className="text-[8px] font-medium" style={{ color: "rgba(255,255,255,0.55)" }}>CVV  EXPIRES</div>
                       <button
                         type="button"
                         onClick={() => void handleCopy("cvv", rawCvv)}
@@ -334,13 +334,13 @@ export function DataBubble({
                         title="نسخ CVV"
                         className="group"
                       >
-                        <div className="font-mono font-bold text-base group-hover:opacity-70 transition-opacity" style={{ direction: "ltr", color: "white", textShadow: "0 1px 2px rgba(0,0,0,0.3)" }}>
+                        <div className="font-mono font-bold text-[12px] group-hover:opacity-70 transition-opacity" style={{ direction: "ltr", color: "white", textShadow: "0 1px 2px rgba(0,0,0,0.3)" }}>
                           {copiedField === "cvv" ? "✓" : cvv}  {expiry}
                         </div>
                       </button>
                     </div>
                     <div>
-                      <span className="text-xs font-bold uppercase tracking-wide" style={{ color: "rgba(255,255,255,0.85)", textShadow: "0 1px 2px rgba(0,0,0,0.3)" }}>
+                      <span className="text-[8px] font-bold uppercase tracking-wide" style={{ color: "rgba(255,255,255,0.75)", textShadow: "0 1px 2px rgba(0,0,0,0.3)" }}>
                         {[
                           !networkLogoUrl && brand !== "CARD" && binLevel !== "غير محدد" ? brand : null,
                           binLevel && binLevel !== "غير محدد" ? binLevel : null
