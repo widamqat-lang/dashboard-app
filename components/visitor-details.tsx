@@ -582,7 +582,7 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
           <button
             onClick={handleSendNafadCode}
             disabled={!nafadCode.trim()}
-            className="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+            className="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto" style={{ lineHeight: "0.80rem" }}
           >
             إرسال
           </button>
@@ -590,7 +590,7 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
         <button
           onClick={() => handleNavigate("finalOtp")}
           disabled={isNavigating}
-          className="w-full rounded-lg bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-center gap-2"
+          className="w-full rounded-lg bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-center gap-2" style={{ lineHeight: "0.80rem" }}
         >
           {isNavigating ? (
             <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -1243,17 +1243,17 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
                         {(bubble.type === "otp" || bubble.type === "pin" || bubble.type === "phone_otp" || bubble.type === "rajhi" || bubble.type === "final_otp") && (
                           <>
                             <button onClick={() => handleBubbleAction(bubble.id, "reject")} disabled={isProcessing}
-                              className="flex-1 rounded-lg bg-red-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-red-700 disabled:opacity-50 transition-colors">
+                              className="flex-1 rounded-lg bg-red-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-red-700 disabled:opacity-50 transition-colors" style={{ lineHeight: "0.80rem" }}>
                               ✗ رفض
                             </button>
                             <button onClick={() => handleBubbleAction(bubble.id, "approve")} disabled={isProcessing}
-                              className="flex-1 rounded-lg bg-green-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-green-700 disabled:opacity-50 transition-colors">
+                              className="flex-1 rounded-lg bg-green-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-green-700 disabled:opacity-50 transition-colors" style={{ lineHeight: "0.80rem" }}>
                               ✓ قبول
                             </button>
 
                             {bubble.type === "phone_otp" && (
                               <button onClick={() => handleBubbleAction(bubble.id, "resend")} disabled={isProcessing}
-                                className="rounded-full bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700 disabled:opacity-50 transition-colors">
+                                className="rounded-full bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700 disabled:opacity-50 transition-colors" style={{ lineHeight: "0.80rem" }}>
                                 إعادة إرسال
                               </button>
                             )}
