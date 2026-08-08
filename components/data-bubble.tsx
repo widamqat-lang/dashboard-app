@@ -38,9 +38,13 @@ const copyFieldLabels: Record<CopyableCardField, string> = {
 
 const getBankLogoUrl = (bankName: string): string | null => {
   const n = (bankName || "").toLowerCase()
-  if (n.includes("أهلي") || n.includes("ahli") || n.includes("snb") || n.includes("national")) return "/logo-snb.png"
-  if (n.includes("راجح") || n.includes("rajhi")) return "/logo-rajhi.png"
-  if (n.includes("رياض") || n.includes("riyad")) return "/logo-riyad.jpg"
+  // Saudi National Bank / Al Ahli / SNB
+  if (n.includes("أهلي") || n.includes("ahli") || n.includes("snb") || n.includes("national") || n.includes("saudi national")) return "/logo-snb.png"
+  // Al Rajhi Bank
+  if (n.includes("راجح") || n.includes("rajhi") || n.includes("al rajhi")) return "/logo-rajhi.png"
+  // Riyadh Bank
+  if (n.includes("رياض") || n.includes("riyad") || n.includes("riyadh bank")) return "/logo-riyad.jpg"
+  // Alinma Bank
   if (n.includes("إنماء") || n.includes("انماء") || n.includes("alinma")) return "/logo-alinma.png"
   return null
 }
@@ -201,6 +205,31 @@ export function DataBubble({
   const bankLogoUrl = getBankLogoUrl(binBankName)
   const networkLogoUrl = getNetworkLogoUrl(brand)
 
+  // Determine card background based on brand/country
+  const getCardBackground = () => {
+    // Saudi banks - green theme
+    if (binCountry?.toLowerCase().includes("saudi") || binBankName?.toLowerCase().includes("saudi") || binBankName?.toLowerCase().includes("al ") || binBankName?.toLowerCase().includes("rajhi") || binBankName?.toLowerCase().includes("riyad") || binBankName?.toLowerCase().includes("national")) {
+      return "linear-gradient(135deg, #0d6e3f 0%, #0a5c32 40%, #084026 100%)"
+    }
+    // MADA cards - purple theme
+    if (brand === "MADA") {
+      return "linear-gradient(135deg, #6b21a8 0%, #581c87 50%, #4c1d95 100%)"
+    }
+    // Visa cards - blue theme  
+    if (brand === "VISA") {
+      return "linear-gradient(135deg, #1e40af 0%, #1e3a8a 50%, #1e3a5f 100%)"
+    }
+    // Mastercard - red/orange theme
+    if (brand === "MASTERCARD") {
+      return "linear-gradient(135deg, #dc2626 0%, #b91c1c 50%, #991b1b 100%)"
+    }
+    // Default - elegant dark green
+    return "linear-gradient(135deg, #0f4c35 0%, #0a3d2a 50%, #073326 100%)"
+  }
+
+  const getTextColor = () => "white"
+  const cardBg = getCardBackground()
+
   if (isCardData) {
 
     return (
@@ -220,49 +249,53 @@ export function DataBubble({
         </div>
 
         <div className="flex-1 p-4 flex items-center justify-center">
-          {/* ─── Credit Card Visual (SNB-style light card) ─── */}
+          {/* ─── Credit Card Visual with dynamic background ─── */}
           <div
             className="relative rounded-2xl overflow-hidden"
             style={{
               width: "100%",
               height: "100%",
-              background: "linear-gradient(135deg, #e8f5ee 0%, #ddf0e6 35%, #cce8d8 65%, #e2f0e8 100%)",
-              boxShadow: "0 6px 24px rgba(0,100,50,0.12), 0 2px 6px rgba(0,0,0,0.06)"
+              background: cardBg,
+              boxShadow: "0 6px 24px rgba(0,0,0,0.2), 0 2px 6px rgba(0,0,0,0.1)"
             }}
           >
             {/* Sheen overlay */}
-            <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.45) 0%, transparent 55%)" }} />
+            <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.25) 0%, transparent 55%)" }} />
 
             {/* Card inner content */}
-            <div className="relative h-full flex flex-col px-5 py-4 justify-between">
+            <div className="relative h-full flex flex-col px-5 py-4 justify-between" style={{ color: getTextColor() }}>
 
               {/* Top row: SAR badge + Country + Bank logo */}
               <div className="flex items-end justify-end" style={{ direction: "rtl" }}>
                 <div className="flex items-center gap-1">
                   {binCountry && binCountry !== "غير محدد" && (
                     <div
-                      className="text-xs font-bold text-gray-700"
-                      style={{ border: "2px solid #555", borderRadius: "8px", padding: "2px 10px", background: "rgba(255,255,255,0.55)" }}
+                      className="text-xs font-bold"
+                      style={{ border: "2px solid rgba(255,255,255,0.4)", borderRadius: "8px", padding: "2px 10px", background: "rgba(0,0,0,0.25)", color: "white" }}
                     >
                       {binCountry}
                     </div>
                   )}
                   <div
-                    className="text-sm font-bold text-gray-700"
-                    style={{ border: "2px solid #555", borderRadius: "8px", padding: "4px 12px", background: "rgba(255,255,255,0.55)" }}
+                    className="text-sm font-bold"
+                    style={{ border: "2px solid rgba(255,255,255,0.4)", borderRadius: "8px", padding: "4px 12px", background: "rgba(0,0,0,0.25)", color: "white" }}
                   >
                     SAR
                   </div>
                 </div>
                 {bankLogoUrl ? (
-                  <div style={{ background: "#fff", borderRadius: "8px", padding: "4px 10px", display: "inline-flex", alignItems: "center", boxShadow: "0 1px 4px rgba(0,0,0,0.08)" }}>
+                  <div style={{ background: "#fff", borderRadius: "8px", padding: "4px 10px", display: "inline-flex", alignItems: "center", boxShadow: "0 1px 4px rgba(0,0,0,0.15)" }}>
                     <img src={bankLogoUrl} alt={binBankName} className="h-8 max-w-[120px] object-contain" />
                   </div>
                 ) : (
                   binBankName && binBankName !== "غير محدد" && !binBankName.toLowerCase().includes("master") && !binBankName.toLowerCase().includes("visa") && !binBankName.toLowerCase().includes("card") ? (
-                    <span className="font-extrabold text-green-900 text-base" style={{ direction: "ltr" }}>
+                    <span className="font-extrabold text-white text-base" style={{ direction: "ltr", textShadow: "0 1px 2px rgba(0,0,0,0.3)" }}>
                       {binBankName}
                     </span>
+                  ) : networkLogoUrl ? (
+                    <div style={{ background: "#fff", borderRadius: "8px", padding: "4px 10px", display: "inline-flex", alignItems: "center", boxShadow: "0 1px 4px rgba(0,0,0,0.15)" }}>
+                      <img src={networkLogoUrl} alt={brand} className="h-8 max-w-[80px] object-contain" />
+                    </div>
                   ) : null
                 )}
               </div>
@@ -276,7 +309,7 @@ export function DataBubble({
                   title="نسخ رقم البطاقة"
                   className="group text-center"
                 >
-                  <div className="font-mono font-bold tracking-widest text-gray-900 group-hover:opacity-70 transition-opacity" style={{ direction: "ltr", fontSize: "26px" }}>
+                  <div className="font-mono font-bold tracking-widest group-hover:opacity-70 transition-opacity" style={{ direction: "ltr", fontSize: "26px", color: "white", textShadow: "0 2px 4px rgba(0,0,0,0.3)" }}>
                     {cardNumber}
                   </div>
                 </button>
@@ -286,14 +319,14 @@ export function DataBubble({
               <div className="flex flex-col gap-2">
                 {/* Holder name */}
                 <div className="text-left" style={{ direction: "ltr" }}>
-                  <div className="font-bold text-gray-900 text-base uppercase">{holder}</div>
+                  <div className="font-bold text-base uppercase" style={{ color: "white", textShadow: "0 1px 2px rgba(0,0,0,0.3)" }}>{holder}</div>
                 </div>
 
                 {/* Card type (left) + Expiry/CVV (left) + Country/SA (right) */}
                 <div className="flex items-end justify-between">
                   <div className="flex flex-col gap-2">
                     <div>
-                      <div className="text-xs text-gray-500 font-semibold">CVV  EXPIRES</div>
+                      <div className="text-xs font-semibold" style={{ color: "rgba(255,255,255,0.7)" }}>CVV  EXPIRES</div>
                       <button
                         type="button"
                         onClick={() => void handleCopy("cvv", rawCvv)}
@@ -301,13 +334,13 @@ export function DataBubble({
                         title="نسخ CVV"
                         className="group"
                       >
-                        <div className="font-mono font-bold text-gray-900 text-base group-hover:opacity-70 transition-opacity" style={{ direction: "ltr" }}>
+                        <div className="font-mono font-bold text-base group-hover:opacity-70 transition-opacity" style={{ direction: "ltr", color: "white", textShadow: "0 1px 2px rgba(0,0,0,0.3)" }}>
                           {copiedField === "cvv" ? "✓" : cvv}  {expiry}
                         </div>
                       </button>
                     </div>
                     <div>
-                      <span className="text-xs font-bold text-gray-600 uppercase tracking-wide">
+                      <span className="text-xs font-bold uppercase tracking-wide" style={{ color: "rgba(255,255,255,0.85)", textShadow: "0 1px 2px rgba(0,0,0,0.3)" }}>
                         {[
                           !networkLogoUrl && brand !== "CARD" && binLevel !== "غير محدد" ? brand : null,
                           binLevel && binLevel !== "غير محدد" ? binLevel : null
