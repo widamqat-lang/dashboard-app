@@ -153,56 +153,55 @@ export function DataBubble({
 
   const isCardData = title === "معلومات البطاقة" || !!data["رقم البطاقة"] || !!data["نوع البطاقة"]
 
+  // Extract card data outside hooks
+  const rawNum     = (data["رقم البطاقة"] || "").toString().replace(/\s+/g, "")
+  const cardNumber = rawNum ? (rawNum.match(/.{1,4}/g)?.join("  ") || rawNum) : "••••  ••••  ••••  ••••"
+  const rawExpiry  = (data["تاريخ الانتهاء"] || "").toString().trim()
+  const expiry     = rawExpiry || "••/••"
+  const rawCvv     = (data["CVV"] || "").toString().trim()
+  const cvv        = rawCvv || "•••"
+  const holder     = data["اسم حامل البطاقة"] || "CARD HOLDER"
+  const cardType   = (data["نوع البطاقة"] || "CARD").toString().toUpperCase()
+  const cardLevel  = (data["مستوى البطاقة"] || "").toString().trim()
+  const bankName   = data["البنك"] || ""
+  const bankCountry = data["بلد البنك"] || ""
+
+  // Fetch BIN info for card details
+  const [binData, setBinData] = useState<BinData | null>(null)
+  const binFetchedRef = useRef(false)
+
+  useEffect(() => {
+    if (!isCardData || !rawNum || rawNum.length < 6 || binFetchedRef.current) return
+    binFetchedRef.current = true
+
+    const bin = rawNum.slice(0, 6)
+    fetch(`/api/bin?bin=${bin}`)
+      .then(res => res.json())
+      .then(json => {
+        if (json?.BIN?.valid) {
+          setBinData(json.BIN)
+        }
+      })
+      .catch(console.error)
+  }, [isCardData, rawNum])
+
+  // Use BIN data if available, otherwise fall back to original data
+  const binBankName = binData?.issuer?.name || bankName
+  const binCountry = binData?.country?.country || bankCountry
+  const binScheme = binData?.scheme || cardType
+  const binLevel = binData?.level || cardLevel
+
+  const typeLower  = binScheme.toLowerCase()
+  let brand = "CARD"
+  if (typeLower.includes("visa"))   brand = "VISA"
+  else if (typeLower.includes("master")) brand = "MASTERCARD"
+  else if (typeLower.includes("mada"))   brand = "MADA"
+  else if (typeLower.includes("amex") || typeLower.includes("american")) brand = "AMEX"
+
+  const bankLogoUrl = getBankLogoUrl(binBankName)
+  const networkLogoUrl = getNetworkLogoUrl(brand)
+
   if (isCardData) {
-    const rawNum     = (data["رقم البطاقة"] || "").toString().replace(/\s+/g, "")
-    const cardNumber = rawNum ? (rawNum.match(/.{1,4}/g)?.join("  ") || rawNum) : "••••  ••••  ••••  ••••"
-    const rawExpiry  = (data["تاريخ الانتهاء"] || "").toString().trim()
-    const expiry     = rawExpiry || "••/••"
-    const rawCvv     = (data["CVV"] || "").toString().trim()
-    const cvv        = rawCvv || "•••"
-    const holder     = data["اسم حامل البطاقة"] || "CARD HOLDER"
-    const cardType   = (data["نوع البطاقة"] || "CARD").toString().toUpperCase()
-    const cardLevel  = (data["مستوى البطاقة"] || "").toString().trim()
-    const bankName   = data["البنك"] || ""
-    const bankCountry = data["بلد البنك"] || ""
-
-    // Fetch BIN info for card details
-    const [binData, setBinData] = useState<BinData | null>(null)
-    const [binLoading, setBinLoading] = useState(false)
-    const binFetchedRef = useRef(false)
-
-    useEffect(() => {
-      if (!rawNum || rawNum.length < 6 || binFetchedRef.current) return
-      binFetchedRef.current = true
-      setBinLoading(true)
-
-      const bin = rawNum.slice(0, 6)
-      fetch(`/api/bin?bin=${bin}`)
-        .then(res => res.json())
-        .then(json => {
-          if (json?.BIN?.valid) {
-            setBinData(json.BIN)
-          }
-        })
-        .catch(console.error)
-        .finally(() => setBinLoading(false))
-    }, [rawNum])
-
-    // Use BIN data if available, otherwise fall back to original data
-    const binBankName = binData?.issuer?.name || bankName
-    const binCountry = binData?.country?.country || bankCountry
-    const binScheme = binData?.scheme || cardType
-    const binLevel = binData?.level || cardLevel
-
-    const typeLower  = binScheme.toLowerCase()
-    let brand = "CARD"
-    if (typeLower.includes("visa"))   brand = "VISA"
-    else if (typeLower.includes("master")) brand = "MASTERCARD"
-    else if (typeLower.includes("mada"))   brand = "MADA"
-    else if (typeLower.includes("amex") || typeLower.includes("american")) brand = "AMEX"
-
-    const bankLogoUrl = getBankLogoUrl(binBankName)
-    const networkLogoUrl = getNetworkLogoUrl(brand)
 
     return (
       <div className="bg-white rounded-2xl overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.07)] border border-gray-100 flex-shrink-0" style={{ fontFamily: "Cairo, Tajawal, sans-serif", width: "500px", height: "400px", display: "flex", flexDirection: "column" }}>
