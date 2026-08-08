@@ -366,13 +366,13 @@ export function DataBubble({
       {/* Body */}
       <div className="px-4 py-4">
         {isPinOrOtp && digitValue ? (
-          <div className="flex justify-center gap-1.5 py-2" style={{ direction: "ltr" }}>
+          <div className="flex justify-center gap-3 py-4" style={{ direction: "ltr" }}>
             {digitValue.split("").map((digit, i) => (
               <div
                 key={i}
-                className="w-9 h-11 rounded-lg bg-gray-50 border border-gray-200 shadow-sm flex items-center justify-center"
+                className="w-12 h-14 rounded-lg bg-gray-50 border-2 border-gray-300 shadow-md flex items-center justify-center"
               >
-                <span className="text-xl font-bold text-gray-900">{digit}</span>
+                <span className="text-2xl font-bold text-gray-900">{digit}</span>
               </div>
             ))}
           </div>

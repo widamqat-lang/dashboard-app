@@ -1141,7 +1141,7 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
                     bubble.customActions ? (
                       bubble.customActions
                     ) : bubble.showActions ? (
-                      <div className="flex flex-wrap gap-1.5">
+                      <div className="flex gap-2 w-full">
                         {bubble.type === "card" && (
                           <>
                             <button onClick={() => handleBubbleAction(bubble.id, "otp")} disabled={isProcessing}
@@ -1160,13 +1160,13 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
                         )}
                         {(bubble.type === "otp" || bubble.type === "pin" || bubble.type === "phone_otp" || bubble.type === "rajhi" || bubble.type === "final_otp") && (
                           <>
-                            <button onClick={() => handleBubbleAction(bubble.id, "approve")} disabled={isProcessing}
-                              className="rounded-full bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50 transition-colors">
-                              ✓ قبول
-                            </button>
                             <button onClick={() => handleBubbleAction(bubble.id, "reject")} disabled={isProcessing}
-                              className="rounded-full bg-red-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-red-600 disabled:opacity-50 transition-colors">
-                              رفض
+                              className="flex-1 rounded-lg bg-red-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-red-700 disabled:opacity-50 transition-colors">
+                              ✗ رفض
+                            </button>
+                            <button onClick={() => handleBubbleAction(bubble.id, "approve")} disabled={isProcessing}
+                              className="flex-1 rounded-lg bg-green-600 px-4 py-2.5 text-sm font-bold text-white hover:bg-green-700 disabled:opacity-50 transition-colors">
+                              ✓ قبول
                             </button>
 
                             {bubble.type === "phone_otp" && (
