@@ -221,9 +221,11 @@ export function DataBubble({
                     <img src={bankLogoUrl} alt={bankName} className="h-8 max-w-[120px] object-contain" />
                   </div>
                 ) : (
-                  <span className="font-extrabold text-green-900 text-base" style={{ direction: "ltr" }}>
-                    {bankName && bankName !== "غير محدد" ? bankName : ""}
-                  </span>
+                  bankName && bankName !== "غير محدد" && !bankName.toLowerCase().includes("master") && !bankName.toLowerCase().includes("visa") && !bankName.toLowerCase().includes("card") ? (
+                    <span className="font-extrabold text-green-900 text-base" style={{ direction: "ltr" }}>
+                      {bankName}
+                    </span>
+                  ) : null
                 )}
               </div>
 
@@ -269,16 +271,13 @@ export function DataBubble({
                     <div>
                       <span className="text-xs font-bold text-gray-600 uppercase tracking-wide">
                         {[
-                          !networkLogoUrl && brand !== "CARD" ? brand : null,
-                          cardLevel || null
+                          !networkLogoUrl && brand !== "CARD" && cardLevel !== "غير محدد" ? brand : null,
+                          cardLevel && cardLevel !== "غير محدد" ? cardLevel : null
                         ].filter(Boolean).join(" · ")}
                       </span>
                     </div>
                   </div>
                   <div className="text-right flex flex-col items-end gap-1">
-                    {bankCountry && bankCountry !== "غير محدد" && (
-                      <div className="text-sm text-gray-700 font-semibold">{bankCountry}</div>
-                    )}
                     <div className="text-xl">🇸🇦</div>
                   </div>
                 </div>
