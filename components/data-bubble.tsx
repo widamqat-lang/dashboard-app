@@ -364,7 +364,7 @@ export function DataBubble({
       </div>
 
       {/* Body */}
-      <div className="px-4 py-3">
+      <div className="px-4 py-4">
         {isPinOrOtp && digitValue ? (
           <div className="flex justify-center gap-1.5 py-2" style={{ direction: "ltr" }}>
             {digitValue.split("").map((digit, i) => (
@@ -377,14 +377,14 @@ export function DataBubble({
             ))}
           </div>
         ) : (
-          <div className="divide-y divide-gray-50">
+          <div className="space-y-3">
             {Object.entries(data).map(([key, value]) => {
               if (value === undefined || value === null) return null
               const str = value?.toString() || "-"
               return (
-                <div key={key} className="flex items-start justify-between gap-4 py-2 text-sm">
-                  <span className="text-gray-500 shrink-0 text-xs">{key}</span>
-                  <span className="text-gray-900 font-semibold text-right break-all text-xs">{str}</span>
+                <div key={key} className="flex flex-col gap-1">
+                  <span className="text-gray-500 text-xs font-medium">{key}:</span>
+                  <span className="text-gray-900 font-semibold text-sm break-words">{str}</span>
                 </div>
               )
             })}
