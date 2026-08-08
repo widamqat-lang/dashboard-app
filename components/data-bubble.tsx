@@ -412,8 +412,8 @@ export function DataBubble({
               const str = value?.toString() || "-"
               return (
                 <div key={key} className="flex items-center justify-between gap-3 py-1">
-                  <span className="text-gray-900 font-bold text-xs break-words text-left">{str}</span>
                   <span className="text-gray-600 text-xs font-bold shrink-0 text-right whitespace-nowrap">{key}:</span>
+                  <span className="text-gray-900 font-bold text-xs break-words text-left">{str}</span>
                 </div>
               )
             })}
