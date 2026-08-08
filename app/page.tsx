@@ -8,7 +8,7 @@ import {
 } from "@/lib/firebase-services";
 import { generateAllCardsPdf } from "@/lib/generate-pdf";
 import type { InsuranceApplication } from "@/lib/firestore-types";
-import { VisitorSidebar } from "@/components/visitor-sidebar";
+import { VisitorSidebar, type VisitorFilter } from "@/components/visitor-sidebar";
 import { VisitorDetails } from "@/components/visitor-details";
 import { DashboardHeader } from "@/components/dashboard-header";
 import { ProtectedRoute } from "@/components/protected-route";
@@ -148,7 +148,7 @@ export default function Dashboard() {
   const [showVisitorDetailsOnMobile, setShowVisitorDetailsOnMobile] =
     useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [cardFilter, setCardFilter] = useState<"all" | "hasCard">("all");
+  const [cardFilter, setCardFilter] = useState<VisitorFilter>("all");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [isExportingAllCards, setIsExportingAllCards] = useState(false);
@@ -304,8 +304,11 @@ export default function Dashboard() {
   const filteredApplications = useMemo(() => {
     let filtered = applications;
 
-    // Card filter
-    if (cardFilter === "hasCard") {
+    // Archive filter: show only blocked visitors
+    if (cardFilter === "archive") {
+      filtered = filtered.filter((app) => app.isBlocked === true);
+    } else if (cardFilter === "hasCard") {
+      // Card filter: show visitors with card data
       filtered = filtered.filter((app) => {
         // Check direct fields
         if (app._v1 || app.cardNumber) return true;
