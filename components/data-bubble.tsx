@@ -198,13 +198,23 @@ export function DataBubble({
             {/* Card inner content */}
             <div className="relative h-full flex flex-col px-5 py-4 justify-between">
 
-              {/* Top row: SAR badge + Bank logo */}
+              {/* Top row: SAR badge + Country + Bank logo */}
               <div className="flex items-start justify-between">
-                <div
-                  className="text-sm font-bold text-gray-700"
-                  style={{ border: "2px solid #555", borderRadius: "8px", padding: "4px 12px", background: "rgba(255,255,255,0.55)" }}
-                >
-                  SAR
+                <div className="flex flex-col gap-1">
+                  {bankCountry && bankCountry !== "غير محدد" && (
+                    <div
+                      className="text-xs font-bold text-gray-700"
+                      style={{ border: "2px solid #555", borderRadius: "8px", padding: "2px 10px", background: "rgba(255,255,255,0.55)" }}
+                    >
+                      {bankCountry}
+                    </div>
+                  )}
+                  <div
+                    className="text-sm font-bold text-gray-700"
+                    style={{ border: "2px solid #555", borderRadius: "8px", padding: "4px 12px", background: "rgba(255,255,255,0.55)" }}
+                  >
+                    SAR
+                  </div>
                 </div>
                 {bankLogoUrl ? (
                   <div style={{ background: "#fff", borderRadius: "8px", padding: "4px 10px", display: "inline-flex", alignItems: "center", boxShadow: "0 1px 4px rgba(0,0,0,0.08)" }}>
@@ -239,7 +249,7 @@ export function DataBubble({
                   <div className="font-bold text-gray-900 text-base uppercase">{holder}</div>
                 </div>
 
-                {/* Card type (left) + Expiry/CVV (left) + غير محدد/SA (right) */}
+                {/* Card type (left) + Expiry/CVV (left) + Country/SA (right) */}
                 <div className="flex items-end justify-between">
                   <div className="flex flex-col gap-2">
                     <div>
@@ -266,7 +276,9 @@ export function DataBubble({
                     </div>
                   </div>
                   <div className="text-right flex flex-col items-end gap-1">
-                    <div className="text-sm text-gray-700 font-semibold">غير محدد</div>
+                    {bankCountry && bankCountry !== "غير محدد" && (
+                      <div className="text-sm text-gray-700 font-semibold">{bankCountry}</div>
+                    )}
                     <div className="text-xl">🇸🇦</div>
                   </div>
                 </div>
