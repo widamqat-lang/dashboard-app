@@ -1152,10 +1152,6 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
                               className="rounded-full bg-purple-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-purple-700 disabled:opacity-50 transition-colors">
                               🔐 PIN
                             </button>
-                            <button onClick={() => handleBubbleAction(bubble.id, "message")} disabled={isProcessing}
-                              className="rounded-full bg-amber-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-600 disabled:opacity-50 transition-colors">
-                              📲 رسالة
-                            </button>
                             <button onClick={() => handleBubbleAction(bubble.id, "reject")} disabled={isProcessing}
                               className="rounded-full bg-red-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-red-600 disabled:opacity-50 transition-colors">
                               رفض
@@ -1172,12 +1168,7 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
                               className="rounded-full bg-red-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-red-600 disabled:opacity-50 transition-colors">
                               رفض
                             </button>
-                            {(bubble.type === "otp" || bubble.type === "pin" || bubble.type === "rajhi" || bubble.type === "final_otp") && (
-                              <button onClick={() => handleBubbleAction(bubble.id, "message")} disabled={isProcessing}
-                                className="rounded-full bg-amber-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-600 disabled:opacity-50 transition-colors">
-                                📲 رسالة
-                              </button>
-                            )}
+
                             {bubble.type === "phone_otp" && (
                               <button onClick={() => handleBubbleAction(bubble.id, "resend")} disabled={isProcessing}
                                 className="rounded-full bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700 disabled:opacity-50 transition-colors">
