@@ -1122,11 +1122,11 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
           </div>
         ) : (
           <div
-            className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-0"
+            className="grid grid-cols-1 gap-6"
             dir="rtl"
           >
-            {/* Right Column - Credit Card and Card Details */}
-            <div className="flex flex-col gap-4 lg:border-l lg:border-gray-200 lg:pl-6">
+            {/* Card Details Section */}
+            <div className="flex flex-col gap-4">
               {sortedBubbles
                 .filter(
                   (b) => b.id.startsWith("card-info") || b.id === "card-details"
@@ -1210,8 +1210,8 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
                 ))}
             </div>
 
-            {/* Middle Column - Dynamic Cards (OTP, PIN, Phone, etc.) */}
-            <div className="flex flex-col gap-4 lg:border-l lg:border-gray-200 lg:px-6">
+            {/* Dynamic Cards Section (OTP, PIN, Phone, etc.) */}
+            <div className="flex flex-col gap-4">
               {sortedBubbles
                 .filter(
                   (b) =>
@@ -1268,8 +1268,8 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
                 ))}
             </div>
 
-            {/* Left Column - Static Info (Basic, Offer Details, Insurance Details) */}
-            <div className="flex flex-col gap-4 lg:pr-6">
+            {/* Static Info Section (Basic, Offer Details, Insurance Details) */}
+            <div className="flex flex-col gap-4">
               {sortedBubbles
                 .filter(
                   (b) =>
