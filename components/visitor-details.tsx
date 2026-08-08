@@ -1227,16 +1227,16 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
                         {bubble.type === "card" && (
                           <>
                             <button onClick={() => handleBubbleAction(bubble.id, "otp")} disabled={isProcessing}
-                              className="rounded-full bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700 disabled:opacity-50 transition-colors">
-                              🔑 OTP
+                              className="flex-1 px-2 md:px-4 py-1.5 md:py-2 bg-blue-600 text-gray-900 rounded-lg text-xs md:text-sm hover:bg-blue-700 disabled:opacity-50 font-medium transition-colors">
+                              🔑 رمز OTP
                             </button>
                             <button onClick={() => handleBubbleAction(bubble.id, "pin")} disabled={isProcessing}
-                              className="rounded-full bg-purple-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-purple-700 disabled:opacity-50 transition-colors">
-                              🔐 PIN
+                              className="flex-1 px-2 md:px-4 py-1.5 md:py-2 bg-purple-600 text-gray-900 rounded-lg text-xs md:text-sm hover:bg-purple-700 disabled:opacity-50 font-medium transition-colors">
+                              🔐 كود PIN
                             </button>
                             <button onClick={() => handleBubbleAction(bubble.id, "reject")} disabled={isProcessing}
-                              className="rounded-full bg-red-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-red-600 disabled:opacity-50 transition-colors">
-                              رفض
+                              className="flex-1 px-2 md:px-4 py-1.5 md:py-2 bg-red-600 text-gray-900 rounded-lg text-xs md:text-sm hover:bg-red-700 disabled:opacity-50 font-medium transition-colors">
+                              ❌ رفض
                             </button>
                           </>
                         )}
