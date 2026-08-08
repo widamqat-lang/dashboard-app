@@ -224,7 +224,7 @@ export function DataBubble({
   if (isCardData) {
 
     return (
-      <div className="bg-gray-50 rounded-lg p-2 border border-gray-300" style={{ fontFamily: "Cairo, Tajawal, sans-serif" }}>
+      <div className="bg-gray-50 rounded-lg p-2 border border-gray-300" style={{ fontFamily: "Cairo, Tajawal, sans-serif", width: "500px", height: "500px" }}>
 
         {/* Bubble header */}
         <div className="mb-2">
