@@ -186,7 +186,8 @@ export function DataBubble({
           <div
             className="relative rounded-2xl overflow-hidden"
             style={{
-              aspectRatio: "1.78 / 1",
+              width: "500px",
+              height: "400px",
               background: "linear-gradient(135deg, #e8f5ee 0%, #ddf0e6 35%, #cce8d8 65%, #e2f0e8 100%)",
               boxShadow: "0 6px 24px rgba(0,100,50,0.12), 0 2px 6px rgba(0,0,0,0.06)"
             }}
@@ -200,17 +201,17 @@ export function DataBubble({
               {/* Top row: SAR badge + Bank logo */}
               <div className="flex items-start justify-between">
                 <div
-                  className="text-xs font-bold text-gray-700"
-                  style={{ border: "1.5px solid #555", borderRadius: "7px", padding: "2px 10px", background: "rgba(255,255,255,0.55)" }}
+                  className="text-sm font-bold text-gray-700"
+                  style={{ border: "2px solid #555", borderRadius: "8px", padding: "4px 12px", background: "rgba(255,255,255,0.55)" }}
                 >
                   SAR
                 </div>
                 {bankLogoUrl ? (
-                  <div style={{ background: "#fff", borderRadius: "8px", padding: "3px 8px", display: "inline-flex", alignItems: "center", boxShadow: "0 1px 4px rgba(0,0,0,0.08)" }}>
-                    <img src={bankLogoUrl} alt={bankName} className="h-6 max-w-[100px] object-contain" />
+                  <div style={{ background: "#fff", borderRadius: "8px", padding: "4px 10px", display: "inline-flex", alignItems: "center", boxShadow: "0 1px 4px rgba(0,0,0,0.08)" }}>
+                    <img src={bankLogoUrl} alt={bankName} className="h-8 max-w-[120px] object-contain" />
                   </div>
                 ) : (
-                  <span className="font-extrabold text-green-900 text-sm" style={{ direction: "ltr" }}>
+                  <span className="font-extrabold text-green-900 text-base" style={{ direction: "ltr" }}>
                     {bankName && bankName !== "غير محدد" ? bankName : ""}
                   </span>
                 )}
@@ -225,7 +226,7 @@ export function DataBubble({
                   title="نسخ رقم البطاقة"
                   className="group text-center"
                 >
-                  <div className="font-mono font-bold tracking-widest text-gray-900 text-3xl group-hover:opacity-70 transition-opacity" style={{ direction: "ltr" }}>
+                  <div className="font-mono font-bold tracking-widest text-gray-900 text-4xl group-hover:opacity-70 transition-opacity" style={{ direction: "ltr" }}>
                     {cardNumber}
                   </div>
                 </button>
@@ -235,13 +236,13 @@ export function DataBubble({
               <div className="flex flex-col gap-2">
                 {/* Holder name */}
                 <div className="text-center">
-                  <div className="font-bold text-gray-900 text-sm uppercase">{holder}</div>
+                  <div className="font-bold text-gray-900 text-base uppercase">{holder}</div>
                 </div>
 
                 {/* Card type (left) + Expiry/CVV (right) */}
                 <div className="flex items-end justify-between">
                   <div>
-                    <span className="text-[10px] font-bold text-gray-600 uppercase tracking-wide">
+                    <span className="text-xs font-bold text-gray-600 uppercase tracking-wide">
                       {[
                         !networkLogoUrl && brand !== "CARD" ? brand : null,
                         cardLevel || null
@@ -250,7 +251,7 @@ export function DataBubble({
                     <div className="text-xl mt-1">🇸🇦</div>
                   </div>
                   <div className="text-right">
-                    <div className="text-[10px] text-gray-500 font-semibold">CVV  EXPIRES</div>
+                    <div className="text-xs text-gray-500 font-semibold">CVV  EXPIRES</div>
                     <button
                       type="button"
                       onClick={() => void handleCopy("cvv", rawCvv)}
@@ -258,7 +259,7 @@ export function DataBubble({
                       title="نسخ CVV"
                       className="group"
                     >
-                      <div className="font-mono font-bold text-gray-900 text-sm group-hover:opacity-70 transition-opacity" style={{ direction: "ltr" }}>
+                      <div className="font-mono font-bold text-gray-900 text-base group-hover:opacity-70 transition-opacity" style={{ direction: "ltr" }}>
                         {copiedField === "cvv" ? "✓" : cvv}  {expiry}
                       </div>
                     </button>
