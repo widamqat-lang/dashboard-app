@@ -199,7 +199,7 @@ export function DataBubble({
             <div className="relative h-full flex flex-col px-5 py-4 justify-between">
 
               {/* Top row: SAR badge + Country + Bank logo */}
-              <div className="flex items-start justify-start">
+              <div className="flex items-end justify-start">
                 <div className="flex items-center gap-1">
                   {bankCountry && bankCountry !== "غير محدد" && (
                     <div
