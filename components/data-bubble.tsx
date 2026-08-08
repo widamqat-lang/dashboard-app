@@ -382,9 +382,9 @@ export function DataBubble({
               if (value === undefined || value === null) return null
               const str = value?.toString() || "-"
               return (
-                <div key={key} className="flex items-center gap-3 py-2">
-                  <span className="text-gray-900 font-semibold text-sm break-words text-left flex-1">{str}</span>
-                  <span className="text-gray-500 text-sm font-medium shrink-0 text-right whitespace-nowrap">{key}:</span>
+                <div key={key} className="flex items-center justify-between gap-4 py-2">
+                  <span className="text-gray-900 font-semibold text-sm break-words text-left">{str}</span>
+                  <span className="text-gray-600 text-sm font-medium shrink-0 text-right whitespace-nowrap">{key}:</span>
                 </div>
               )
             })}
