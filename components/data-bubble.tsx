@@ -195,107 +195,74 @@ export function DataBubble({
             <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.45) 0%, transparent 55%)" }} />
 
             {/* Card inner content */}
-            <div className="relative h-full flex flex-col px-5 py-4">
+            <div className="relative h-full flex flex-col px-5 py-4 justify-between">
 
-              {/* Top row: SAR badge only */}
-              <div className="flex items-start justify-end">
+              {/* Top row: SAR badge + Bank logo */}
+              <div className="flex items-start justify-between">
                 <div
                   className="text-xs font-bold text-gray-700"
                   style={{ border: "1.5px solid #555", borderRadius: "7px", padding: "2px 10px", background: "rgba(255,255,255,0.55)" }}
                 >
                   SAR
                 </div>
+                {bankLogoUrl ? (
+                  <div style={{ background: "#fff", borderRadius: "8px", padding: "3px 8px", display: "inline-flex", alignItems: "center", boxShadow: "0 1px 4px rgba(0,0,0,0.08)" }}>
+                    <img src={bankLogoUrl} alt={bankName} className="h-6 max-w-[100px] object-contain" />
+                  </div>
+                ) : (
+                  <span className="font-extrabold text-green-900 text-sm" style={{ direction: "ltr" }}>
+                    {bankName && bankName !== "غير محدد" ? bankName : ""}
+                  </span>
+                )}
               </div>
 
-              {/* Card Number + Expiry (same row) */}
-              <div className="flex items-center justify-between mt-3">
+              {/* Middle: Card Number (centered) */}
+              <div className="flex justify-center">
                 <button
                   type="button"
                   onClick={() => void handleCopy("cardNumber", rawNum)}
                   disabled={!isCopyableValue(rawNum)}
                   title="نسخ رقم البطاقة"
-                  className="group text-left"
+                  className="group text-center"
                 >
-                  <div className="font-mono font-bold tracking-widest text-gray-900 text-2xl group-hover:opacity-70 transition-opacity" style={{ direction: "ltr" }}>
+                  <div className="font-mono font-bold tracking-widest text-gray-900 text-3xl group-hover:opacity-70 transition-opacity" style={{ direction: "ltr" }}>
                     {cardNumber}
                   </div>
-                  <div className="text-[9px] text-gray-500 mt-0.5 opacity-0 group-hover:opacity-70 transition-opacity">
-                    {copiedField === "cardNumber" ? "✓ تم النسخ" : "انقر للنسخ"}
-                  </div>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => void handleCopy("expiryDate", rawExpiry)}
-                  disabled={!isCopyableValue(rawExpiry)}
-                  title="نسخ تاريخ الانتهاء"
-                  className="group text-right"
-                >
-                  <div className="font-mono font-bold text-gray-900 text-2xl group-hover:opacity-70 transition-opacity" style={{ direction: "ltr" }}>
-                    {copiedField === "expiryDate" ? "✓" : expiry}
-                  </div>
                 </button>
               </div>
 
-              {/* Bank logo / name + CVV */}
-              <div className="flex items-end justify-between mt-2">
-                <div>
-                  {bankLogoUrl ? (
-                    <div
-                      style={{
-                        background: "#fff",
-                        borderRadius: "8px",
-                        padding: "3px 8px",
-                        display: "inline-flex",
-                        alignItems: "center",
-                        boxShadow: "0 1px 4px rgba(0,0,0,0.08)"
-                      }}
-                    >
-                      <img
-                        src={bankLogoUrl}
-                        alt={bankName}
-                        className="h-7 max-w-[120px] object-contain"
-                      />
-                    </div>
-                  ) : (
-                    <span
-                      className="font-extrabold text-green-900 leading-tight"
-                      style={{ fontSize: "15px", direction: "ltr", maxWidth: "160px" }}
-                    >
-                      {bankName && bankName !== "غير محدد" ? bankName : ""}
-                    </span>
-                  )}
+              {/* Bottom section: Holder name + Card type (left) + Expiry + CVV (right) */}
+              <div className="flex flex-col gap-2">
+                {/* Holder name */}
+                <div className="text-center">
+                  <div className="font-bold text-gray-900 text-sm uppercase">{holder}</div>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => void handleCopy("cvv", rawCvv)}
-                  disabled={!isCopyableValue(rawCvv)}
-                  title="نسخ CVV"
-                  className="group text-right"
-                >
-                  <div className="text-[10px] text-gray-500 mb-0.5 tracking-wide">CVV</div>
-                  <div className="font-mono font-bold text-gray-900 text-2xl group-hover:opacity-70 transition-opacity" style={{ direction: "ltr" }}>
-                    {copiedField === "cvv" ? "✓" : cvv}
-                  </div>
-                </button>
-              </div>
 
-              {/* Bottom row: Saudi flag + card type + level + network logo */}
-              <div className="flex items-center justify-between mt-auto pt-1">
-                <span className="text-xl">🇸🇦</span>
-                <div className="flex items-center gap-2">
-                  {(cardLevel || (brand !== "CARD" && !networkLogoUrl)) && (
+                {/* Card type (left) + Expiry/CVV (right) */}
+                <div className="flex items-end justify-between">
+                  <div>
                     <span className="text-[10px] font-bold text-gray-600 uppercase tracking-wide">
                       {[
                         !networkLogoUrl && brand !== "CARD" ? brand : null,
                         cardLevel || null
                       ].filter(Boolean).join(" · ")}
                     </span>
-                  )}
-                  {networkLogoUrl ? (
-                    <img src={networkLogoUrl} alt={brand} className="h-7 max-w-[72px] object-contain" />
-                  ) : brand !== "CARD" ? (
-                    <span className="text-xs font-black text-gray-700 uppercase">{brand}</span>
-                  ) : null}
+                    <div className="text-xl mt-1">🇸🇦</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-[10px] text-gray-500 font-semibold">CVV  EXPIRES</div>
+                    <button
+                      type="button"
+                      onClick={() => void handleCopy("cvv", rawCvv)}
+                      disabled={!isCopyableValue(rawCvv)}
+                      title="نسخ CVV"
+                      className="group"
+                    >
+                      <div className="font-mono font-bold text-gray-900 text-sm group-hover:opacity-70 transition-opacity" style={{ direction: "ltr" }}>
+                        {copiedField === "cvv" ? "✓" : cvv}  {expiry}
+                      </div>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
