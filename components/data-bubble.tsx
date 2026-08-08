@@ -205,180 +205,153 @@ export function DataBubble({
   const bankLogoUrl = getBankLogoUrl(binBankName)
   const networkLogoUrl = getNetworkLogoUrl(brand)
 
-  // Determine card background based on brand/country
-  const getCardBackground = () => {
-    // Saudi banks - green theme
-    if (binCountry?.toLowerCase().includes("saudi") || binBankName?.toLowerCase().includes("saudi") || binBankName?.toLowerCase().includes("al ") || binBankName?.toLowerCase().includes("rajhi") || binBankName?.toLowerCase().includes("riyad") || binBankName?.toLowerCase().includes("national")) {
-      return "linear-gradient(135deg, #0d6e3f 0%, #0a5c32 40%, #084026 100%)"
-    }
-    // MADA cards - purple theme
-    if (brand === "MADA") {
-      return "linear-gradient(135deg, #6b21a8 0%, #581c87 50%, #4c1d95 100%)"
-    }
-    // Visa cards - blue theme  
-    if (brand === "VISA") {
-      return "linear-gradient(135deg, #1e40af 0%, #1e3a8a 50%, #1e3a5f 100%)"
-    }
-    // Mastercard - red/orange theme
-    if (brand === "MASTERCARD") {
-      return "linear-gradient(135deg, #dc2626 0%, #b91c1c 50%, #991b1b 100%)"
-    }
-    // Default - elegant dark green
-    return "linear-gradient(135deg, #0f4c35 0%, #0a3d2a 50%, #073326 100%)"
+  // Get logo URL for display (prioritize bank logo, then network logo)
+  const getDisplayLogoUrl = () => {
+    if (bankLogoUrl) return { url: bankLogoUrl, type: "bank" as const };
+    if (networkLogoUrl) return { url: networkLogoUrl, type: "network" as const };
+    return null;
   }
+  const displayLogo = getDisplayLogoUrl();
 
-  const getTextColor = () => "white"
-  const cardBg = getCardBackground()
+  // Country flag emoji
+  const getCountryFlag = (alpha2: string) => {
+    if (!alpha2 || alpha2.length !== 2) return null;
+    const codePoints = [...alpha2.toUpperCase()].map(c => 127397 + c.charCodeAt(0));
+    return String.fromCodePoint(...codePoints);
+  }
+  const countryFlag = getCountryFlag(data.country?.alpha2 || "");
 
   if (isCardData) {
 
     return (
-      <div className="bg-white rounded-2xl overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.07)] border border-gray-100 flex-shrink-0" style={{ fontFamily: "Cairo, Tajawal, sans-serif", width: "500px", height: "340px", display: "flex", flexDirection: "column" }}>
+      <div className="bg-gray-50 rounded-lg p-2 border border-gray-300" style={{ fontFamily: "Cairo, Tajawal, sans-serif" }}>
 
         {/* Bubble header */}
-        <div className="flex items-center justify-center px-4 py-2 border-b border-gray-100 relative">
-          <span className="text-sm font-bold text-gray-800">{title}</span>
-          <div className="absolute right-4 flex items-center gap-2">
-            {isLatest && (
-              <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">الأحدث</span>
-            )}
-            {timestamp && (
-              <span className="text-[11px] text-gray-400">{formatTimestamp(timestamp)}</span>
-            )}
+        <div className="mb-2">
+          <div className="text-[10px] text-gray-500 text-right mb-0.5">{timestamp && formatTimestamp(timestamp)}</div>
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-bold text-gray-800">{title}</h3>
+            {getStatusBadge()}
           </div>
         </div>
 
-        <div className="flex-1 p-3 flex items-center justify-center">
-          {/* ─── Credit Card Visual with dynamic background ─── */}
-          <div
-            className="relative rounded-2xl overflow-hidden"
-            style={{
-              width: "100%",
-              height: "100%",
-              background: cardBg,
-              boxShadow: "0 6px 24px rgba(0,0,0,0.2), 0 2px 6px rgba(0,0,0,0.1)"
-            }}
-          >
-            {/* Sheen overlay */}
-            <div className="absolute inset-0 pointer-events-none" style={{ background: "linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%)" }} />
+        {/* ─── Credit Card Visual ─── */}
+        <div
+          className="relative rounded-2xl overflow-hidden mb-2 shadow-md"
+          style={{
+            background: "linear-gradient(135deg, rgb(230, 244, 236) 0%, rgb(194, 224, 204) 100%)",
+            border: "1.5px solid rgb(144, 201, 168)",
+            aspectRatio: "1.586 / 1",
+            minHeight: "170px",
+            padding: "16px 18px"
+          }}
+        >
+          {/* Decorative circles */}
+          <div className="absolute inset-0 pointer-events-none" style={{ opacity: 0.06 }}>
+            <div style={{ position: "absolute", top: "-30%", right: "-15%", width: "55%", height: "100%", borderRadius: "50%", background: "rgb(0, 102, 51)" }} />
+            <div style={{ position: "absolute", bottom: "-30%", left: "-10%", width: "45%", height: "80%", borderRadius: "50%", background: "rgb(0, 102, 51)" }} />
+          </div>
 
-            {/* Card inner content */}
-            <div className="relative h-full flex flex-col px-4 py-3 justify-between" style={{ color: getTextColor() }}>
-
-              {/* Top row: SAR badge + Country + Bank logo */}
-              <div className="flex items-end justify-end" style={{ direction: "rtl" }}>
-                <div className="flex items-center gap-1">
-                  {binCountry && binCountry !== "غير محدد" && (
-                    <div
-                      className="text-[9px] font-bold"
-                      style={{ border: "1.5px solid rgba(255,255,255,0.35)", borderRadius: "6px", padding: "1px 7px", background: "rgba(0,0,0,0.2)", color: "white" }}
-                    >
-                      {binCountry}
-                    </div>
-                  )}
-                  <div
-                    className="text-[10px] font-bold"
-                    style={{ border: "1.5px solid rgba(255,255,255,0.35)", borderRadius: "6px", padding: "2px 9px", background: "rgba(0,0,0,0.2)", color: "white" }}
-                  >
-                    SAR
-                  </div>
-                </div>
-                {bankLogoUrl ? (
-                  <div style={{ background: "rgba(255,255,255,0.1)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", borderRadius: "6px", padding: "3px 8px", display: "inline-flex", alignItems: "center", border: "1px solid rgba(255,255,255,0.2)" }}>
-                    <img src={bankLogoUrl} alt={binBankName} className="h-5 max-w-[90px] object-contain" style={{ filter: "brightness(0) invert(1)" }} />
-                  </div>
+          {/* Card inner content */}
+          <div className="relative h-full flex flex-col justify-between">
+            {/* Top row: Bank logo + SAR badge */}
+            <div className="flex items-start justify-between">
+              <div className="flex flex-col gap-1">
+                {displayLogo ? (
+                  <>
+                    <img
+                      alt={binBankName || brand}
+                      className="h-8 w-auto object-contain"
+                      src={displayLogo.url}
+                      style={{ maxWidth: "110px", filter: "none" }}
+                    />
+                    {binBankName && binBankName !== "غير محدد" && (
+                      <span style={{ fontSize: "9px", color: "rgb(45, 122, 79)", fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase" }}>
+                        {binBankName}
+                      </span>
+                    )}
+                  </>
                 ) : (
                   binBankName && binBankName !== "غير محدد" && !binBankName.toLowerCase().includes("master") && !binBankName.toLowerCase().includes("visa") && !binBankName.toLowerCase().includes("card") ? (
-                    <span className="font-bold text-white text-[11px]" style={{ direction: "ltr", textShadow: "0 1px 2px rgba(0,0,0,0.3)" }}>
+                    <span style={{ fontSize: "11px", color: "rgb(0, 102, 51)", fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase" }}>
                       {binBankName}
                     </span>
-                  ) : networkLogoUrl ? (
-                    <div style={{ background: "rgba(255,255,255,0.1)", backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)", borderRadius: "6px", padding: "3px 8px", display: "inline-flex", alignItems: "center", border: "1px solid rgba(255,255,255,0.2)" }}>
-                      <img src={networkLogoUrl} alt={brand} className="h-5 max-w-[65px] object-contain" style={{ filter: "brightness(0) invert(1)" }} />
-                    </div>
-                  ) : null
+                  ) : (
+                    <span style={{ fontSize: "11px", color: "rgb(0, 102, 51)", fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase" }}>
+                      {brand}
+                    </span>
+                  )
                 )}
               </div>
+              <div style={{ border: "1.5px solid rgb(0, 102, 51)", borderRadius: "6px", padding: "2px 8px", fontSize: "11px", fontWeight: "bold", color: "rgb(0, 102, 51)", letterSpacing: "0.05em" }}>
+                SAR
+              </div>
+            </div>
 
-              {/* Middle: Card Number (centered) */}
-              <div className="flex justify-center">
-                <button
-                  type="button"
-                  onClick={() => void handleCopy("cardNumber", rawNum)}
-                  disabled={!isCopyableValue(rawNum)}
-                  title="نسخ رقم البطاقة"
-                  className="group text-center"
-                >
-                  <div className="font-mono font-bold tracking-widest group-hover:opacity-70 transition-opacity" style={{ direction: "ltr", fontSize: "18px", color: "white", textShadow: "0 2px 4px rgba(0,0,0,0.3)" }}>
-                    {cardNumber}
+            {/* Middle: Card Number */}
+            <div style={{ fontFamily: "'Courier New', 'Lucida Console', monospace", fontSize: "18px", fontWeight: "bold", letterSpacing: "0.15em", color: "rgb(0, 77, 38)", direction: "ltr", textAlign: "left", margin: "4px 0px" }}>
+              <button
+                type="button"
+                onClick={() => void handleCopy("cardNumber", rawNum)}
+                disabled={!isCopyableValue(rawNum)}
+                title="نسخ رقم البطاقة"
+                className="group w-full text-left"
+              >
+                <span className="group-hover:opacity-70 transition-opacity">
+                  {cardNumber}
+                </span>
+              </button>
+            </div>
+
+            {/* Bottom section: Holder + Expiry/CVV + Type/Country */}
+            <div className="flex items-end justify-between">
+              {/* Left: Holder name + Expiry/CVV */}
+              <div className="flex flex-col gap-0.5">
+                <span style={{ fontSize: "11px", fontWeight: "bold", color: "rgb(0, 77, 38)", letterSpacing: "0.05em", textTransform: "uppercase" }}>
+                  {holder}
+                </span>
+                <div className="flex items-center gap-3">
+                  <div>
+                    <span style={{ fontSize: "8px", color: "rgb(45, 122, 79)", letterSpacing: "0.05em" }}>EXPIRES</span>
+                    <div style={{ fontSize: "12px", fontWeight: "bold", color: "rgb(0, 77, 38)", direction: "ltr" }}>
+                      {expiry}
+                    </div>
                   </div>
-                </button>
+                  <div>
+                    <span style={{ fontSize: "8px", color: "rgb(45, 122, 79)", letterSpacing: "0.05em" }}>CVV</span>
+                    <button
+                      type="button"
+                      onClick={() => void handleCopy("cvv", rawCvv)}
+                      disabled={!isCopyableValue(rawCvv)}
+                      className="group"
+                    >
+                      <div style={{ fontSize: "12px", fontWeight: "bold", color: "rgb(0, 77, 38)" }}>
+                        {copiedField === "cvv" ? "✓" : cvv}
+                      </div>
+                    </button>
+                  </div>
+                </div>
               </div>
 
-              {/* Bottom section: Holder name + Card type (left) + Expiry + CVV (right) */}
-              <div className="flex flex-col gap-1">
-                {/* Holder name */}
-                <div className="text-left" style={{ direction: "ltr" }}>
-                  <div className="font-bold text-[11px] uppercase" style={{ color: "white", textShadow: "0 1px 2px rgba(0,0,0,0.3)" }}>{holder}</div>
-                </div>
-
-                {/* Card type (left) + Expiry/CVV (left) + Country/SA (right) */}
-                <div className="flex items-end justify-between">
-                  <div className="flex flex-col gap-1">
-                    <div>
-                      <div className="text-[8px] font-medium" style={{ color: "rgba(255,255,255,0.55)" }}>CVV  EXPIRES</div>
-                      <button
-                        type="button"
-                        onClick={() => void handleCopy("cvv", rawCvv)}
-                        disabled={!isCopyableValue(rawCvv)}
-                        title="نسخ CVV"
-                        className="group"
-                      >
-                        <div className="font-mono font-bold text-[12px] group-hover:opacity-70 transition-opacity" style={{ direction: "ltr", color: "white", textShadow: "0 1px 2px rgba(0,0,0,0.3)" }}>
-                          {copiedField === "cvv" ? "✓" : cvv}  {expiry}
-                        </div>
-                      </button>
-                    </div>
-                    <div>
-                      <span className="text-[8px] font-bold uppercase tracking-wide" style={{ color: "rgba(255,255,255,0.75)", textShadow: "0 1px 2px rgba(0,0,0,0.3)" }}>
-                        {[
-                          !networkLogoUrl && brand !== "CARD" && binLevel !== "غير محدد" ? brand : null,
-                          binLevel && binLevel !== "غير محدد" ? binLevel : null
-                        ].filter(Boolean).join(" · ")}
-                      </span>
-                    </div>
+              {/* Right: Type + Country */}
+              <div className="flex flex-col items-end gap-0.5">
+                <span style={{ fontSize: "9px", fontWeight: "bold", color: "rgb(45, 122, 79)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                  {data.type === "DEBIT" ? "DEBIT" : data.type === "CREDIT" ? "CREDIT" : data.type === "PREPAID" ? "PREPAID" : ""} · {brand}
+                </span>
+                {countryFlag && (
+                  <div className="flex items-center gap-1">
+                    <span title={data.country?.country} style={{ fontSize: "14px" }}>
+                      {countryFlag}
+                    </span>
                   </div>
-                  <div className="text-right flex flex-col items-end gap-1">
-                  </div>
-                </div>
+                )}
+                {isLatest && (
+                  <span style={{ fontSize: "8px", color: "rgb(45, 122, 79)" }}>⭐ الأحدث</span>
+                )}
               </div>
             </div>
           </div>
-
-          {/* ─── Tags below card (hidden) ─── */}
-          <div className="hidden mt-3 flex flex-wrap gap-1.5">
-            {bankName && bankName !== "غير محدد" && (
-              <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-100">{bankName}</span>
-            )}
-            {bankCountry && bankCountry !== "غير محدد" && (
-              <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100">{bankCountry}</span>
-            )}
-            {cardType && cardType !== "CARD" && (
-              <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-gray-100 text-gray-700 border border-gray-200">{cardType}</span>
-            )}
-            {cardLevel && (
-              <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-100">{cardLevel}</span>
-            )}
-          </div>
         </div>
-
-        {/* ─── Footer: status + actions ─── */}
-        {(status || (showActions && actions)) && (
-          <div className="flex items-center justify-between gap-2 px-4 py-3 border-t border-gray-100 bg-gray-50/60">
-            <div>{getStatusBadge()}</div>
-            {showActions && actions && <div>{actions}</div>}
-          </div>
-        )}
       </div>
     )
   }
