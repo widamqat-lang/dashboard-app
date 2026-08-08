@@ -183,7 +183,7 @@ export default function PresenceDebugPage() {
             <p className="text-sm text-red-700">
               موقع العملاء <strong>لا يكتب إلى عقدة presence</strong> أصلاً، أو يكتب إلى قاعدة بيانات
               Realtime Database مختلفة، أو القواعد (rules) تمنع القراءة/الكتابة. هذا هو السبب الجذري لظهور
-              الزوار كـ "غير متصل".
+              الزوار كـ &quot;غير متصل&quot;.
             </p>
           </div>
         )}
@@ -201,7 +201,7 @@ export default function PresenceDebugPage() {
           <div className="mb-6 bg-green-50 border-r-4 border-green-500 p-4 rounded">
             <h3 className="font-bold text-green-800 mb-1">✅ يوجد تطابق</h3>
             <p className="text-sm text-green-700">
-              عقدة presence تعمل ويوجد {matched.length} زائر متطابق. لو كان الزائر لا يظهر "متصل" رغم
+              عقدة presence تعمل ويوجد {matched.length} زائر متطابق. لو كان الزائر لا يظهر &quot;متصل&quot; رغم
               وجوده هنا بـ online=true، فالمشكلة في لوحة التحكم (تم إصلاحها في هذا التحديث).
             </p>
           </div>

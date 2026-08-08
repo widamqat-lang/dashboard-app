@@ -228,7 +228,6 @@ export default function Dashboard() {
       setPresenceVersion((n) => n + 1);
     });
     return () => unsubscribe();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Play notification sound
