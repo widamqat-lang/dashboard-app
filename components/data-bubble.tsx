@@ -287,7 +287,7 @@ export function DataBubble({
             </div>
 
             {/* Middle: Card Number */}
-            <div style={{ fontFamily: "'Courier New', 'Lucida Console', monospace", fontSize: "16px", fontWeight: "bold", letterSpacing: "0.15em", color: "rgb(0, 77, 38)", direction: "ltr", textAlign: "left", margin: "2px 0px" }}>
+            <div style={{ fontFamily: "'Courier New', 'Lucida Console', monospace", fontWeight: "bold", color: "rgb(0, 77, 38)", display: "inline-block", width: "auto", direction: "ltr", textAlign: "left", letterSpacing: "0.18em", whiteSpace: "nowrap", alignItems: "center", margin: "2px 0px" }}>
               <button
                 type="button"
                 onClick={() => void handleCopy("cardNumber", rawNum)}
@@ -295,7 +295,7 @@ export function DataBubble({
                 title="نسخ رقم البطاقة"
                 className="group w-full text-left"
               >
-                <span className="group-hover:opacity-70 transition-opacity">
+                <span className="group-hover:opacity-70 transition-opacity" style={{ fontSize: "32px", width: "80%" }}>
                   {cardNumber}
                 </span>
               </button>
