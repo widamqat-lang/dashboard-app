@@ -13,6 +13,8 @@ import { VisitorDetails } from "@/components/visitor-details";
 import { DashboardHeader } from "@/components/dashboard-header";
 import { ProtectedRoute } from "@/components/protected-route";
 import { Timestamp } from "firebase/firestore";
+import { ref, onValue } from "firebase/database";
+import { database } from "@/lib/firebase";
 import { toast } from "sonner";
 
 const toTimeValue = (value: unknown): number => {
@@ -161,6 +163,30 @@ export default function Dashboard() {
   const selectedVisitorIdRef = useRef<string | null>(null);
   const visitorOrderRef = useRef<string[]>([]);
 
+  // Presence map: visitorId -> { online: boolean, lastSeen: number }
+  // Populated by Realtime Database listener for instant online/offline detection.
+  const presenceMapRef = useRef<Record<string, { online: boolean; lastSeen: number }>>({});
+  const [, forcePresenceUpdate] = useState(0);
+
+  // Subscribe to Realtime Database presence node for instant online/offline status.
+  useEffect(() => {
+    const presenceRef = ref(database, "presence");
+    const unsubscribe = onValue(presenceRef, (snapshot) => {
+      const val = snapshot.val() || {};
+      const next: Record<string, { online: boolean; lastSeen: number }> = {};
+      for (const [id, data] of Object.entries(val)) {
+        const d = data as any;
+        next[id] = {
+          online: Boolean(d?.online),
+          lastSeen: typeof d?.lastSeen === "number" ? d.lastSeen : 0,
+        };
+      }
+      presenceMapRef.current = next;
+      forcePresenceUpdate((n) => n + 1);
+    });
+    return () => unsubscribe();
+  }, []);
+
   // Play notification sound
   const playNotificationSound = () => {
     const audio = new Audio("/notification-piano.mp3");
@@ -175,14 +201,20 @@ export default function Dashboard() {
       // Keep any visitor that has meaningful progress data (including STC-only flow).
       const validApps = apps.filter(hasDashboardData);
 
-      // Calculate isOnline based on lastActiveAt (fallback to lastSeen for legacy docs).
+      // Determine online status from Realtime Database presence (instant).
+      // Falls back to lastActiveAt/lastSeen for legacy visitors without presence.
       const now = new Date();
-      const thirtySecondsAgoTime = now.getTime() - 30 * 1000;
+      const fiveSecondsAgoTime = now.getTime() - 5 * 1000;
+      const presence = presenceMapRef.current;
 
       const appsWithOnlineStatus = validApps.map((app) => {
+        const presenceEntry = app.id ? presence[app.id] : undefined;
+        if (presenceEntry) {
+          return { ...app, isOnline: presenceEntry.online };
+        }
+        // Legacy fallback: derive from lastActiveAt/lastSeen
         const lastActivityTime = toTimeValue(app.lastActiveAt ?? app.lastSeen);
-        const isOnline = lastActivityTime > 0 && lastActivityTime >= thirtySecondsAgoTime;
-
+        const isOnline = lastActivityTime > 0 && lastActivityTime >= fiveSecondsAgoTime;
         return { ...app, isOnline };
       });
 
