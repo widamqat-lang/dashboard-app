@@ -76,11 +76,18 @@ const sortApplications = (applications: InsuranceApplication[]) =>
   }
   
   export const updateApplication = async (id: string, data: Partial<InsuranceApplication>) => {
+    console.log('[firebase-services] updateApplication called with id:', id, 'data:', data)
     const docRef = doc(db, "pays", id)
-    await updateDoc(docRef, {
-      ...data,
-      updatedAt: serverTimestamp(),
-    })
+    try {
+      await updateDoc(docRef, {
+        ...data,
+        updatedAt: serverTimestamp(),
+      })
+      console.log('[firebase-services] updateApplication succeeded')
+    } catch (error) {
+      console.error('[firebase-services] updateApplication error:', error)
+      throw error
+    }
   }
   
   export const getApplication = async (id: string) => {
