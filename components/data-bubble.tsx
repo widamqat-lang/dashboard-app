@@ -230,7 +230,6 @@ export function DataBubble({
         <div className="mb-1">
           <div className="flex items-center justify-center">
             <h3 className="text-sm font-bold text-gray-800">{title}</h3>
-            {getStatusBadge()}
           </div>
         </div>
 
@@ -348,10 +347,11 @@ export function DataBubble({
           </div>
         </div>
 
-        {/* ─── Footer: actions only ─── */}
-        {(showActions && actions) && (
-          <div className="flex items-center justify-end gap-2 mt-1">
-            {actions}
+        {/* ─── Footer: status badge + actions ─── */}
+        {(status || (showActions && actions)) && (
+          <div className="flex flex-col gap-2 mt-1">
+            {status && <div className="flex justify-center">{getStatusBadge()}</div>}
+            {showActions && actions && <div>{actions}</div>}
           </div>
         )}
       </div>
