@@ -767,7 +767,6 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
               cardStatusUpdatedAt: getCurrentTimestamp(),
             });
           } else if (action === "reject") {
-            if (confirm("هل أنت متأكد من رفض البطاقة؟")) {
               // Reject card - update history status
               await updateHistoryStatus(
                 visitor.id,
@@ -779,7 +778,6 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
                 cardStatus: "rejected",
                 cardStatusUpdatedAt: getCurrentTimestamp(),
               });
-            }
           } else if (action === "message") {
             await updateApplication(visitor.id, {
               cardStatus: "message",
@@ -801,7 +799,6 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
               _v5StatusUpdatedAt: getCurrentTimestamp(),
             });
           } else if (action === "reject") {
-            if (confirm("هل أنت متأكد من رفض كود OTP؟")) {
               // Reject OTP using proper handler
               await handleOtpRejection(
                 visitor.id,
@@ -812,7 +809,6 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
               await updateApplication(visitor.id, {
                 _v5StatusUpdatedAt: getCurrentTimestamp(),
               });
-            }
           } else if (action === "message") {
             await updateApplication(visitor.id, {
               _v5Status: "message",
@@ -833,7 +829,6 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
             }
             // Phone OTP approved
           } else if (action === "reject") {
-            if (confirm("هل أنت متأكد من رفض كود الهاتف؟")) {
               if (hasMultipleAttempts) {
                 await handlePhoneOtpRejection(visitor.id, bubbleId, history);
               } else {
@@ -843,7 +838,6 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
                 });
               }
               // Phone OTP rejected
-            }
           } else if (action === "resend") {
             await updateHistoryStatus(
               visitor.id,
@@ -906,7 +900,6 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
               _v6StatusUpdatedAt: getCurrentTimestamp(),
             });
           } else if (action === "reject") {
-            if (confirm("هل أنت متأكد من رفض رمز PIN؟")) {
               await updateHistoryStatus(
                 visitor.id,
                 bubble.id,
@@ -918,7 +911,6 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
                 _v6Status: "rejected",
                 _v6StatusUpdatedAt: getCurrentTimestamp(),
               });
-            }
           } else if (action === "message") {
             await updateApplication(visitor.id, {
               pinStatus: "message",
@@ -934,14 +926,12 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
               finalOtpStatusUpdatedAt: getCurrentTimestamp(),
             });
           } else if (action === "reject") {
-            if (confirm("هل أنت متأكد من رفض رمز OTP الأخير؟")) {
               await updateApplication(visitor.id, {
                 finalOtp: "",
                 _v13: "",
                 finalOtpStatus: "rejected",
                 finalOtpStatusUpdatedAt: getCurrentTimestamp(),
               });
-            }
           } else if (action === "message") {
             await updateApplication(visitor.id, {
               finalOtpStatus: "message",
