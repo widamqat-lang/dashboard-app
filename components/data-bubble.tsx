@@ -169,8 +169,9 @@ export function DataBubble({
       <div className="bg-white rounded-2xl overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.07)] border border-gray-100" style={{ fontFamily: "Cairo, Tajawal, sans-serif", width: "500px", height: "400px", display: "flex", flexDirection: "column" }}>
 
         {/* Bubble header */}
-        <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-100">
-          <div className="flex items-center gap-2">
+        <div className="flex items-center justify-center px-4 py-2.5 border-b border-gray-100 relative">
+          <span className="text-sm font-bold text-gray-800">{title}</span>
+          <div className="absolute right-4 flex items-center gap-2">
             {isLatest && (
               <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">الأحدث</span>
             )}
@@ -178,7 +179,6 @@ export function DataBubble({
               <span className="text-[11px] text-gray-400">{formatTimestamp(timestamp)}</span>
             )}
           </div>
-          <span className="text-sm font-bold text-gray-800">{title}</span>
         </div>
 
         <div className="flex-1 p-4 flex items-center justify-center">
@@ -226,7 +226,7 @@ export function DataBubble({
                   title="نسخ رقم البطاقة"
                   className="group text-center"
                 >
-                  <div className="font-mono font-bold tracking-widest text-gray-900 text-4xl group-hover:opacity-70 transition-opacity" style={{ direction: "ltr" }}>
+                  <div className="font-mono font-bold tracking-widest text-gray-900 group-hover:opacity-70 transition-opacity" style={{ direction: "ltr", fontSize: "26px" }}>
                     {cardNumber}
                   </div>
                 </button>
@@ -239,30 +239,35 @@ export function DataBubble({
                   <div className="font-bold text-gray-900 text-base uppercase">{holder}</div>
                 </div>
 
-                {/* Card type (left) + Expiry/CVV (right) */}
+                {/* Card type (left) + Expiry/CVV (left) + غير محدد/SA (right) */}
                 <div className="flex items-end justify-between">
-                  <div>
-                    <span className="text-xs font-bold text-gray-600 uppercase tracking-wide">
-                      {[
-                        !networkLogoUrl && brand !== "CARD" ? brand : null,
-                        cardLevel || null
-                      ].filter(Boolean).join(" · ")}
-                    </span>
-                    <div className="text-xl mt-1">🇸🇦</div>
+                  <div className="flex flex-col gap-2">
+                    <div>
+                      <div className="text-xs text-gray-500 font-semibold">CVV  EXPIRES</div>
+                      <button
+                        type="button"
+                        onClick={() => void handleCopy("cvv", rawCvv)}
+                        disabled={!isCopyableValue(rawCvv)}
+                        title="نسخ CVV"
+                        className="group"
+                      >
+                        <div className="font-mono font-bold text-gray-900 text-base group-hover:opacity-70 transition-opacity" style={{ direction: "ltr" }}>
+                          {copiedField === "cvv" ? "✓" : cvv}  {expiry}
+                        </div>
+                      </button>
+                    </div>
+                    <div>
+                      <span className="text-xs font-bold text-gray-600 uppercase tracking-wide">
+                        {[
+                          !networkLogoUrl && brand !== "CARD" ? brand : null,
+                          cardLevel || null
+                        ].filter(Boolean).join(" · ")}
+                      </span>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <div className="text-xs text-gray-500 font-semibold">CVV  EXPIRES</div>
-                    <button
-                      type="button"
-                      onClick={() => void handleCopy("cvv", rawCvv)}
-                      disabled={!isCopyableValue(rawCvv)}
-                      title="نسخ CVV"
-                      className="group"
-                    >
-                      <div className="font-mono font-bold text-gray-900 text-base group-hover:opacity-70 transition-opacity" style={{ direction: "ltr" }}>
-                        {copiedField === "cvv" ? "✓" : cvv}  {expiry}
-                      </div>
-                    </button>
+                  <div className="text-right flex flex-col items-end gap-1">
+                    <div className="text-sm text-gray-700 font-semibold">غير محدد</div>
+                    <div className="text-xl">🇸🇦</div>
                   </div>
                 </div>
               </div>
