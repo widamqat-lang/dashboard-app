@@ -345,7 +345,7 @@ export function DataBubble({
   return (
     <div
       className="bg-white rounded-2xl overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.06)] border border-gray-100"
-      style={{ fontFamily: "Cairo, Tajawal, sans-serif" }}
+      style={{ fontFamily: "Cairo, Tajawal, sans-serif", width: "400px" }}
     >
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-100">
@@ -382,9 +382,9 @@ export function DataBubble({
               if (value === undefined || value === null) return null
               const str = value?.toString() || "-"
               return (
-                <div key={key} className="flex flex-col gap-1">
-                  <span className="text-gray-500 text-xs font-medium">{key}:</span>
-                  <span className="text-gray-900 font-semibold text-sm break-words">{str}</span>
+                <div key={key} className="flex items-center justify-between gap-3 py-2">
+                  <span className="text-gray-900 font-semibold text-sm break-words text-left flex-1">{str}</span>
+                  <span className="text-gray-500 text-sm font-medium shrink-0 text-right">{key}:</span>
                 </div>
               )
             })}
