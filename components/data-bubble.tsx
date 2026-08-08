@@ -348,18 +348,18 @@ export function DataBubble({
       style={{ fontFamily: "Cairo, Tajawal, sans-serif", width: "400px" }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-100">
+      <div className="flex items-center justify-center px-4 py-2.5 border-b border-gray-100 relative">
         <div className="flex items-center gap-2">
+          {icon && <span className="text-base">{icon}</span>}
+          <span className="text-sm font-bold text-gray-800">{title}</span>
+        </div>
+        <div className="absolute right-4 flex items-center gap-2">
           {isLatest && (
             <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">الأحدث</span>
           )}
           {timestamp && (
             <span className="text-[11px] text-gray-400">{formatTimestamp(timestamp)}</span>
           )}
-        </div>
-        <div className="flex items-center gap-2">
-          {icon && <span className="text-base">{icon}</span>}
-          <span className="text-sm font-bold text-gray-800">{title}</span>
         </div>
       </div>
 
@@ -382,9 +382,9 @@ export function DataBubble({
               if (value === undefined || value === null) return null
               const str = value?.toString() || "-"
               return (
-                <div key={key} className="flex items-center justify-between gap-3 py-2">
+                <div key={key} className="flex items-center gap-3 py-2">
                   <span className="text-gray-900 font-semibold text-sm break-words text-left flex-1">{str}</span>
-                  <span className="text-gray-500 text-sm font-medium shrink-0 text-right">{key}:</span>
+                  <span className="text-gray-500 text-sm font-medium shrink-0 text-right whitespace-nowrap">{key}:</span>
                 </div>
               )
             })}
