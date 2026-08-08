@@ -202,7 +202,7 @@ export function VisitorSidebar({
 
   return (
     <div
-      className="h-full w-full bg-white/95 backdrop-blur-sm landscape:border-l md:w-[400px] md:border-l border-gray-200 flex flex-col relative group shadow-sm"
+      className="h-full w-full bg-white/95 backdrop-blur-sm landscape:border-l md:w-[280px] md:border-l border-gray-200 flex flex-col relative group shadow-sm"
       style={{
         fontFamily: "Cairo, Tajawal, sans-serif",
         width: isLandscape ? `${sidebarWidth}px` : undefined,
