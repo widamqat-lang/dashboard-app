@@ -209,39 +209,39 @@ export function VisitorSidebar({
       }}
     >
       {/* Header */}
-      <div className="p-3 sm:p-4 landscape:p-2 border-b border-gray-200 bg-gradient-to-b from-white to-gray-50">
-        <h1 className="text-xl landscape:text-base font-bold text-gray-800 mb-4 landscape:mb-2">
+      <div className="p-2 landscape:p-1.5 border-b border-gray-200 bg-gradient-to-b from-white to-gray-50">
+        <h1 className="text-base landscape:text-sm font-bold text-gray-800 mb-2 landscape:mb-1">
           لوحة التحكم
         </h1>
-        <div className="mb-3 flex flex-wrap items-center gap-2">
-          <span className="text-xs font-semibold px-2 py-1 rounded-full bg-blue-100 text-blue-700">
+        <div className="mb-2 flex flex-wrap items-center gap-1.5">
+          <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700">
             إجمالي: {visitors.length}
           </span>
-          <span className="text-xs font-semibold px-2 py-1 rounded-full bg-pink-100 text-pink-700">
-            غير مقروء: {unreadCount}
+          <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-pink-100 text-pink-700">
+            غير: {unreadCount}
           </span>
-          <span className="text-xs font-semibold px-2 py-1 rounded-full bg-amber-100 text-amber-700">
-            قيد المراجعة: {waitingCount}
+          <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700">
+            مراجعة: {waitingCount}
           </span>
         </div>
 
         {/* Search */}
-        <div className="relative mb-3 landscape:mb-2">
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 landscape:w-4 landscape:h-4 text-gray-400" />
+        <div className="relative mb-2 landscape:mb-1">
+          <Search className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 landscape:w-3 landscape:h-3 text-gray-400" />
           <input
             type="text"
-            placeholder="بحث (الاسم، الهوية، الهاتف، آخر 4 أرقام)"
+            placeholder="بحث..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 py-2 pl-4 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 landscape:py-1.5 landscape:text-xs"
+            className="w-full rounded border border-gray-300 py-1.5 pl-3 pr-8 text-xs focus:outline-none focus:ring-2 focus:ring-green-500 landscape:py-1 landscape:text-[10px]"
           />
         </div>
 
         {/* Filters */}
-        <div className="mb-3 grid grid-cols-2 gap-2 landscape:mb-2">
+        <div className="mb-2 grid grid-cols-2 gap-1.5 landscape:mb-1">
           <button
             onClick={() => onCardFilterChange("all")}
-            className={`px-3 py-1.5 landscape:py-1 rounded-lg text-sm landscape:text-xs font-medium transition-colors ${
+            className={`px-2 py-1 landscape:py-0.5 rounded text-[10px] landscape:text-[9px] font-medium transition-colors ${
               cardFilter === "all"
                 ? "bg-green-600 text-white"
                 : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -251,7 +251,7 @@ export function VisitorSidebar({
           </button>
           <button
             onClick={() => onCardFilterChange("hasCard")}
-            className={`px-3 py-1.5 landscape:py-1 rounded-lg text-sm landscape:text-xs font-medium transition-colors ${
+            className={`px-2 py-1 landscape:py-0.5 rounded text-[10px] landscape:text-[9px] font-medium transition-colors ${
               cardFilter === "hasCard"
                 ? "bg-green-600 text-white"
                 : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -262,17 +262,17 @@ export function VisitorSidebar({
         </div>
 
         {/* Actions */}
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-1.5">
           <button
             onClick={onSelectAll}
-            className="flex min-w-[135px] flex-1 items-center justify-center gap-2 rounded-lg bg-gray-200 px-3 py-1.5 text-sm font-medium transition-colors hover:bg-gray-300 landscape:py-1 landscape:text-xs"
+            className="flex min-w-[100px] flex-1 items-center justify-center gap-1 rounded bg-gray-200 px-2 py-1 text-[10px] font-medium transition-colors hover:bg-gray-300 landscape:py-0.5 landscape:text-[9px]"
           >
             {allSelected ? (
-              <CheckSquare className="w-4 h-4 landscape:w-3 landscape:h-3" />
+              <CheckSquare className="w-3 h-3 landscape:w-2.5 landscape:h-2.5" />
             ) : (
-              <Square className="w-4 h-4 landscape:w-3 landscape:h-3" />
+              <Square className="w-3 h-3 landscape:w-2.5 landscape:h-2.5" />
             )}
-            {allSelected ? "إلغاء الكل" : "تحديد الكل"}
+            {allSelected ? "إلغاء" : "تحديد الكل"}
           </button>
 
           {selectedIds.size > 0 && (

