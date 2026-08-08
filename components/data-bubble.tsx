@@ -71,6 +71,12 @@ export function DataBubble({
 }: DataBubbleProps) {
   const [copiedField, setCopiedField] = useState<CopyableCardField | null>(null)
   const copyResetTimeoutRef = useRef<number | null>(null)
+  const [, setTick] = useState(0)
+
+  useEffect(() => {
+    const id = window.setInterval(() => setTick(t => t + 1), 1000)
+    return () => window.clearInterval(id)
+  }, [])
 
   useEffect(() => {
     return () => {
@@ -144,15 +150,17 @@ export function DataBubble({
     )
   }
 
-  const formatTimestamp = (ts: string | Date) => {
-    const d = new Date(ts)
-    const mm = String(d.getMonth() + 1).padStart(2, "0")
-    const dd = String(d.getDate()).padStart(2, "0")
-    let h = d.getHours()
-    const min = String(d.getMinutes()).padStart(2, "0")
-    const ampm = h >= 12 ? "م" : "ص"
-    h = h % 12 || 12
-    return `${mm}-${dd} | ${h}:${min} ${ampm}`
+  const formatElapsed = (ts: string | Date) => {
+    const diff = Math.max(0, Date.now() - new Date(ts).getTime())
+    const totalSeconds = Math.floor(diff / 1000)
+    const days = Math.floor(totalSeconds / 86400)
+    const hours = Math.floor((totalSeconds % 86400) / 3600)
+    const minutes = Math.floor((totalSeconds % 3600) / 60)
+    const seconds = totalSeconds % 60
+    if (days > 0) return `${days} يوم و ${hours} ساعة`
+    if (hours > 0) return `${hours} ساعة و ${minutes} دقيقة`
+    if (minutes > 0) return `${minutes} دقيقة و ${seconds} ثانية`
+    return `${seconds} ثانية`
   }
 
   const isCardData = title === "معلومات البطاقة" || !!data["رقم البطاقة"] || !!data["نوع البطاقة"]
@@ -230,7 +238,7 @@ export function DataBubble({
         <div className="mb-1">
           <div className="flex items-center justify-between">
             <span className="text-[10px] text-gray-400">
-              {timestamp ? formatTimestamp(timestamp) : ""}
+              {timestamp ? `⏱ ${formatElapsed(timestamp)}` : ""}
             </span>
             <h3 className="text-sm font-bold text-gray-800">{title}</h3>
             <div style={{ width: "80px" }}></div>
@@ -391,7 +399,7 @@ export function DataBubble({
             <span className="text-[9px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded-full">الأحدث</span>
           )}
           {timestamp && (
-            <span className="text-[10px] text-gray-400">{formatTimestamp(timestamp)}</span>
+            <span className="text-[10px] text-gray-400">⏱ {formatElapsed(timestamp)}</span>
           )}
         </div>
       </div>
