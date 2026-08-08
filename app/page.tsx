@@ -400,6 +400,35 @@ export default function Dashboard() {
     }
   };
 
+  // Handle archive selected (block visitors to move them to archive)
+  const handleArchiveSelected = async (ids: string[]) => {
+    if (ids.length === 0) return;
+
+    const count = ids.length;
+    if (
+      !confirm(
+        `هل أنت متأكد من أرشفة ${count} زائر؟\n\nسيتم نقل الزوار المحددين إلى الأرشيف.`
+      )
+    ) {
+      return;
+    }
+
+    try {
+      await Promise.all(
+        ids.map((id) => updateApplication(id, { isBlocked: true }))
+      );
+      setSelectedIds(new Set());
+      alert(`✅ تمت أرشفة ${count} زائر بنجاح`);
+    } catch (error) {
+      console.error("Error archiving applications:", error);
+      alert(
+        `❌ حدث خطأ أثناء الأرشفة: ${
+          error instanceof Error ? error.message : "خطأ غير معروف"
+        }`
+      );
+    }
+  };
+
   // Mark as read when visitor is selected
   const handleSelectVisitor = async (visitor: InsuranceApplication) => {
     setSelectedVisitor(visitor);
@@ -472,6 +501,7 @@ export default function Dashboard() {
               }}
               onSelectAll={handleSelectAll}
               onDeleteSelected={handleDeleteSelected}
+              onArchiveSelected={handleArchiveSelected}
               sidebarWidth={sidebarWidth}
               onSidebarWidthChange={setSidebarWidth}
             />

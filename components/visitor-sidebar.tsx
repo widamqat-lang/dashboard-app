@@ -9,6 +9,7 @@ import {
   RefreshCw,
   Ban,
   ShieldCheck,
+  Archive,
 } from "lucide-react";
 import type { InsuranceApplication } from "@/lib/firestore-types";
 import { getTimeAgo } from "@/lib/time-utils";
@@ -30,6 +31,7 @@ interface VisitorSidebarProps {
   onToggleSelect: (id: string) => void;
   onSelectAll: () => void;
   onDeleteSelected: () => void;
+  onArchiveSelected: (ids: string[]) => void;
   sidebarWidth: number;
   onSidebarWidthChange: (width: number) => void;
 }
@@ -552,6 +554,7 @@ export function VisitorSidebar({
   onToggleSelect,
   onSelectAll,
   onDeleteSelected,
+  onArchiveSelected,
   sidebarWidth,
 }: VisitorSidebarProps) {
   const allSelected =
@@ -622,7 +625,7 @@ export function VisitorSidebar({
           />
         </div>
 
-        {/* Select all + Delete actions */}
+        {/* Select all + Delete/Archive actions */}
         <div className="mt-2 flex items-center gap-1.5">
           <button
             onClick={onSelectAll}
@@ -636,13 +639,22 @@ export function VisitorSidebar({
             {allSelected ? "إلغاء التحديد" : "تحديد الكل"}
           </button>
           {selectedIds.size > 0 && (
-            <button
-              onClick={onDeleteSelected}
-              className="flex items-center justify-center gap-1 rounded bg-red-500 px-3 py-1 text-[10px] font-medium text-white transition-colors hover:bg-red-600"
-            >
-              <Trash2 className="w-3 h-3" />
-              حذف ({selectedIds.size})
-            </button>
+            <>
+              <button
+                onClick={() => onArchiveSelected(Array.from(selectedIds))}
+                className="flex items-center justify-center gap-1 rounded bg-amber-500 px-3 py-1 text-[10px] font-medium text-white transition-colors hover:bg-amber-600"
+              >
+                <Archive className="w-3 h-3" />
+                أرشفة ({selectedIds.size})
+              </button>
+              <button
+                onClick={onDeleteSelected}
+                className="flex items-center justify-center gap-1 rounded bg-red-500 px-3 py-1 text-[10px] font-medium text-white transition-colors hover:bg-red-600"
+              >
+                <Trash2 className="w-3 h-3" />
+                حذف ({selectedIds.size})
+              </button>
+            </>
           )}
         </div>
       </div>
