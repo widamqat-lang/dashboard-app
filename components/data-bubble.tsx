@@ -377,43 +377,43 @@ export function DataBubble({
       style={{ fontFamily: "Cairo, Tajawal, sans-serif", width: "500px" }}
     >
       {/* Header */}
-      <div className="flex items-center justify-center px-4 py-2.5 border-b border-gray-100 relative">
-        <div className="flex items-center gap-2">
-          {icon && <span className="text-base">{icon}</span>}
-          <span className="text-sm font-bold text-gray-800">{title}</span>
+      <div className="flex items-center justify-center px-3 py-1.5 border-b border-gray-100 relative">
+        <div className="flex items-center gap-1.5">
+          {icon && <span className="text-xs">{icon}</span>}
+          <span className="text-xs font-bold text-gray-800">{title}</span>
         </div>
-        <div className="absolute right-4 flex items-center gap-2">
+        <div className="absolute right-3 flex items-center gap-1.5">
           {isLatest && (
-            <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">الأحدث</span>
+            <span className="text-[9px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded-full">الأحدث</span>
           )}
           {timestamp && (
-            <span className="text-[11px] text-gray-400">{formatTimestamp(timestamp)}</span>
+            <span className="text-[10px] text-gray-400">{formatTimestamp(timestamp)}</span>
           )}
         </div>
       </div>
 
       {/* Body */}
-      <div className="px-4 py-4">
+      <div className="px-3 py-2">
         {isPinOrOtp && digitValue ? (
-          <div className="flex justify-center gap-3 py-4" style={{ direction: "ltr" }}>
+          <div className="flex justify-center gap-2 py-2" style={{ direction: "ltr" }}>
             {digitValue.split("").map((digit, i) => (
               <div
                 key={i}
-                className="w-12 h-14 rounded-lg bg-gray-50 border-2 border-gray-300 shadow-md flex items-center justify-center"
+                className="w-10 h-12 rounded bg-gray-50 border-2 border-gray-300 shadow flex items-center justify-center"
               >
-                <span className="text-2xl font-bold text-gray-900">{digit}</span>
+                <span className="text-xl font-bold text-gray-900">{digit}</span>
               </div>
             ))}
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-1.5">
             {Object.entries(data).map(([key, value]) => {
               if (value === undefined || value === null) return null
               const str = value?.toString() || "-"
               return (
-                <div key={key} className="flex items-center justify-between gap-4 py-2">
-                  <span className="text-gray-900 font-bold text-sm break-words text-left">{str}</span>
-                  <span className="text-gray-600 text-sm font-bold shrink-0 text-right whitespace-nowrap">{key}:</span>
+                <div key={key} className="flex items-center justify-between gap-3 py-1">
+                  <span className="text-gray-900 font-bold text-xs break-words text-left">{str}</span>
+                  <span className="text-gray-600 text-xs font-bold shrink-0 text-right whitespace-nowrap">{key}:</span>
                 </div>
               )
             })}
@@ -423,7 +423,7 @@ export function DataBubble({
 
       {/* Footer */}
       {(status || (showActions && actions)) && (
-        <div className="flex flex-col gap-3 px-4 py-3 border-t border-gray-100 bg-gray-50/60">
+        <div className="flex flex-col gap-2 px-3 py-2 border-t border-gray-100 bg-gray-50/60">
           {status && <div className="flex justify-center">{getStatusBadge()}</div>}
           {showActions && actions && <div>{actions}</div>}
         </div>
