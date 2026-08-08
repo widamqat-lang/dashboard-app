@@ -199,7 +199,7 @@ export function DataBubble({
             <div className="relative h-full flex flex-col px-5 py-4 justify-between">
 
               {/* Top row: SAR badge + Country + Bank logo */}
-              <div className="flex items-start justify-between">
+              <div className="flex items-start justify-start">
                 <div className="flex items-center gap-1">
                   {bankCountry && bankCountry !== "غير محدد" && (
                     <div
@@ -247,7 +247,7 @@ export function DataBubble({
               {/* Bottom section: Holder name + Card type (left) + Expiry + CVV (right) */}
               <div className="flex flex-col gap-2">
                 {/* Holder name */}
-                <div className="text-center">
+                <div className="text-left" style={{ direction: "ltr" }}>
                   <div className="font-bold text-gray-900 text-base uppercase">{holder}</div>
                 </div>
 
