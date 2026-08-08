@@ -200,7 +200,7 @@ export function DataBubble({
 
               {/* Top row: SAR badge + Country + Bank logo */}
               <div className="flex items-start justify-between">
-                <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-1">
                   {bankCountry && bankCountry !== "غير محدد" && (
                     <div
                       className="text-xs font-bold text-gray-700"
@@ -278,7 +278,6 @@ export function DataBubble({
                     </div>
                   </div>
                   <div className="text-right flex flex-col items-end gap-1">
-                    <div className="text-xl">🇸🇦</div>
                   </div>
                 </div>
               </div>
