@@ -307,22 +307,22 @@ export function DataBubble({
                 <span style={{ fontSize: "10px", fontWeight: "bold", color: "rgb(0, 77, 38)", letterSpacing: "0.03em", textTransform: "uppercase" }}>
                   {holder}
                 </span>
-                <div className="flex items-center gap-2">
-                  <div>
-                    <span style={{ fontSize: "7px", color: "rgb(45, 122, 79)", letterSpacing: "0.03em" }}>EXPIRES</span>
-                    <div style={{ fontSize: "10px", fontWeight: "bold", color: "rgb(0, 77, 38)", direction: "ltr" }}>
+                <div className="flex items-center" style={{ gap: "10px" }}>
+                  <div className="flex items-baseline gap-1">
+                    <span style={{ fontSize: "16px", color: "rgb(45, 122, 79)", letterSpacing: "0.03em", fontWeight: "bold" }}>EXPIRES</span>
+                    <div style={{ fontSize: "16px", fontWeight: "bold", color: "rgb(0, 77, 38)", direction: "ltr" }}>
                       {expiry}
                     </div>
                   </div>
-                  <div>
-                    <span style={{ fontSize: "7px", color: "rgb(45, 122, 79)", letterSpacing: "0.03em" }}>CVV</span>
+                  <div className="flex items-baseline gap-1">
+                    <span style={{ fontSize: "16px", color: "rgb(45, 122, 79)", letterSpacing: "0.03em", fontWeight: "bold" }}>CVV</span>
                     <button
                       type="button"
                       onClick={() => void handleCopy("cvv", rawCvv)}
                       disabled={!isCopyableValue(rawCvv)}
                       className="group"
                     >
-                      <div style={{ fontSize: "10px", fontWeight: "bold", color: "rgb(0, 77, 38)" }}>
+                      <div style={{ fontSize: "16px", fontWeight: "bold", color: "rgb(0, 77, 38)" }}>
                         {copiedField === "cvv" ? "✓" : cvv}
                       </div>
                     </button>
