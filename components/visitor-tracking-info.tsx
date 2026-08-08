@@ -123,7 +123,7 @@ export function VisitorTrackingInfo({ visitor }: VisitorTrackingInfoProps) {
       </div>
 
       {/* Block Status */}
-      {visitor.isBlocked && (
+      {visitor.is_blocked && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-3">
           <p className="text-red-600 font-semibold">⚠️ محظور</p>
         </div>

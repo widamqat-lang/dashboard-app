@@ -465,7 +465,7 @@ function BlockButton({ visitor }: { visitor: InsuranceApplication }) {
     if (!visitor.id || loading) return;
     setLoading(true);
     try {
-      await updateApplication(visitor.id, { isBlocked: !visitor.isBlocked });
+      await updateApplication(visitor.id, { is_blocked: !visitor.is_blocked });
     } catch {
       // silent
     } finally {
@@ -477,14 +477,14 @@ function BlockButton({ visitor }: { visitor: InsuranceApplication }) {
     <button
       onClick={handleToggle}
       disabled={loading}
-      title={visitor.isBlocked ? "إلغاء الحظر" : "حظر الزائر"}
+      title={visitor.is_blocked ? "إلغاء الحظر" : "حظر الزائر"}
       className={`flex items-center justify-center w-7 h-7 rounded-full transition-all disabled:opacity-40 ${
-        visitor.isBlocked
+        visitor.is_blocked
           ? "bg-red-100 text-red-600 hover:bg-red-200"
           : "bg-gray-100 text-gray-400 hover:bg-red-100 hover:text-red-600"
       }`}
     >
-      {visitor.isBlocked ? (
+      {visitor.is_blocked ? (
         <ShieldCheck className="w-3.5 h-3.5" />
       ) : (
         <Ban className="w-3.5 h-3.5" />
@@ -681,7 +681,7 @@ export function VisitorSidebar({
             let rowBg = "hover:bg-gray-100";
             if (isSelected) {
               rowBg = "bg-green-50 border-r-2 border-green-500 shadow-sm";
-            } else if (visitor.isBlocked) {
+            } else if (visitor.is_blocked) {
               rowBg = "bg-red-50 border-r-2 border-red-400";
             } else if (visitor.isUnread) {
               rowBg = "bg-green-50 hover:bg-gray-100";
@@ -733,7 +733,7 @@ export function VisitorSidebar({
                         </span>
                       )}
                       {/* Blocked badge */}
-                      {visitor.isBlocked && (
+                      {visitor.is_blocked && (
                         <span className="shrink-0 inline-flex items-center gap-0.5 text-[9px] font-bold text-red-600">
                           <Ban className="w-2.5 h-2.5" />
                         </span>

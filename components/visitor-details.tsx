@@ -1039,12 +1039,12 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
                     onClick={async (e) => {
                       e.stopPropagation();
                       if (!visitor.id || isBlocking) return;
-                      const action = visitor.isBlocked ? "إلغاء الحظر" : "حظر";
+                      const action = visitor.is_blocked ? "إلغاء الحظر" : "حظر";
                       if (!confirm(`هل أنت متأكد من ${action} هذا الزائر؟`)) return;
                       setIsBlocking(true);
                       try {
-                        await updateApplication(visitor.id, { isBlocked: !visitor.isBlocked });
-                        alert(visitor.isBlocked ? "تم إلغاء الحظر بنجاح" : "تم الحظر بنجاح");
+                        await updateApplication(visitor.id, { is_blocked: !visitor.is_blocked });
+                        alert(visitor.is_blocked ? "تم إلغاء الحظر بنجاح" : "تم الحظر بنجاح");
                       } catch (error) {
                         console.error("Block error:", error);
                         alert("حدث خطأ");
@@ -1054,12 +1054,12 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
                     }}
                     disabled={isBlocking}
                     className={`font-semibold text-[10px] px-1.5 py-0.5 rounded transition-colors ${
-                      visitor.isBlocked
+                      visitor.is_blocked
                         ? "bg-red-100 text-red-600 hover:bg-red-200"
                         : "bg-gray-100 text-gray-500 hover:bg-red-100 hover:text-red-600"
                     }`}
                   >
-                    {visitor.isBlocked ? "محظور" : "حظر"}
+                    {visitor.is_blocked ? "محظور" : "حظر"}
                   </button>
                 </div>
               )}

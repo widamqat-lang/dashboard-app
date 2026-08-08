@@ -31,7 +31,7 @@ export function VisitorBlockControl({ visitor }: VisitorBlockControlProps) {
   const handleToggleBlock = async () => {
     if (!visitor.id) return
     
-    const confirmMessage = visitor.isBlocked
+    const confirmMessage = visitor.is_blocked
       ? "هل أنت متأكد من إلغاء حظر هذا الزائر?"
       : "هل أنت متأكد من حظر هذا الزائر؟ لن يتمكن من الوصول إلى الخدمة."
     
@@ -41,10 +41,10 @@ export function VisitorBlockControl({ visitor }: VisitorBlockControlProps) {
     
     try {
       await updateApplication(visitor.id, {
-        isBlocked: !visitor.isBlocked
+        is_blocked: !visitor.is_blocked
       })
       
-      alert(visitor.isBlocked ? "تم إلغاء الحظر بنجاح" : "تم الحظر بنجاح")
+      alert(visitor.is_blocked ? "تم إلغاء الحظر بنجاح" : "تم الحظر بنجاح")
     } catch (error) {
       console.error("Error toggling block:", error)
       alert("حدث خطأ أثناء تحديث حالة الحظر")
@@ -58,17 +58,17 @@ export function VisitorBlockControl({ visitor }: VisitorBlockControlProps) {
       <Button
         onClick={handleToggleBlock}
         disabled={isProcessing}
-        variant={visitor.isBlocked ? "default" : "destructive"}
+        variant={visitor.is_blocked ? "default" : "destructive"}
         className="w-full"
       >
         {isProcessing
           ? "جاري التحديث..."
-          : visitor.isBlocked
+          : visitor.is_blocked
           ? "إلغاء الحظر"
           : "حظر الزائر"}
       </Button>
       
-      {visitor.isBlocked && (
+      {visitor.is_blocked && (
         <p className="text-xs text-red-600 mt-2 text-center">
           هذا الزائر محظور حالياً ولا يمكنه الوصول إلى الخدمة
         </p>
