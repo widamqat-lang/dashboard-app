@@ -1209,9 +1209,10 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
                     ) : null
                   }
                 />
-                {(bubble as any).binNumber && (
+                {/* BIN Info hidden by user request */}
+                {/* {(bubble as any).binNumber && (
                   <BinInfo cardNumber={(bubble as any).binNumber} />
-                )}
+                )} */}
               </div>
             ))}
           </div>
