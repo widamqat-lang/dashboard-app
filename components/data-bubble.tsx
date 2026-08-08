@@ -352,6 +352,14 @@ export function DataBubble({
             </div>
           </div>
         </div>
+
+        {/* ─── Footer: status + actions ─── */}
+        {(status || (showActions && actions)) && (
+          <div className="flex items-center justify-between gap-2 px-1 py-2 border-t border-gray-200 bg-gray-50">
+            <div>{getStatusBadge()}</div>
+            {showActions && actions && <div>{actions}</div>}
+          </div>
+        )}
       </div>
     )
   }
