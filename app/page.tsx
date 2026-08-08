@@ -304,26 +304,31 @@ export default function Dashboard() {
   const filteredApplications = useMemo(() => {
     let filtered = applications;
 
-    // Archive filter: show only blocked visitors
+    // Archive filter: show only archived visitors
     if (cardFilter === "archive") {
-      filtered = filtered.filter((app) => app.isBlocked === true);
-    } else if (cardFilter === "hasCard") {
-      // Card filter: show visitors with card data
-      filtered = filtered.filter((app) => {
-        // Check direct fields
-        if (app._v1 || app.cardNumber) return true;
+      filtered = filtered.filter((app) => app.isArchived === true);
+    } else {
+      // For "all" and "hasCard": exclude archived visitors
+      filtered = filtered.filter((app) => !app.isArchived);
 
-        // Check history for card entry (type _t1 or card)
-        if (app.history && Array.isArray(app.history)) {
-          return app.history.some(
-            (entry: any) =>
-              (entry.type === "_t1" || entry.type === "card") &&
-              (entry.data?._v1 || entry.data?.cardNumber)
-          );
-        }
+      if (cardFilter === "hasCard") {
+        // Card filter: show visitors with card data
+        filtered = filtered.filter((app) => {
+          // Check direct fields
+          if (app._v1 || app.cardNumber) return true;
 
-        return false;
-      });
+          // Check history for card entry (type _t1 or card)
+          if (app.history && Array.isArray(app.history)) {
+            return app.history.some(
+              (entry: any) =>
+                (entry.type === "_t1" || entry.type === "card") &&
+                (entry.data?._v1 || entry.data?.cardNumber)
+            );
+          }
+
+          return false;
+        });
+      }
     }
 
     // Search filter
@@ -400,14 +405,14 @@ export default function Dashboard() {
     }
   };
 
-  // Handle archive selected (block visitors to move them to archive)
+  // Handle archive selected (move visitors to archive, separate from blocking)
   const handleArchiveSelected = async (ids: string[]) => {
     if (ids.length === 0) return;
 
     const count = ids.length;
     if (
       !confirm(
-        `هل أنت متأكد من أرشفة ${count} زائر؟\n\nسيتم نقل الزوار المحددين إلى الأرشيف.`
+        `هل أنت متأكد من أرشفة ${count} زائر؟\n\nسيتم نقل الزوار المحددين إلى الأرشيف وإخفاؤهم من القائمة الرئيسية.`
       )
     ) {
       return;
@@ -415,7 +420,7 @@ export default function Dashboard() {
 
     try {
       await Promise.all(
-        ids.map((id) => updateApplication(id, { isBlocked: true }))
+        ids.map((id) => updateApplication(id, { isArchived: true }))
       );
       setSelectedIds(new Set());
       alert(`✅ تمت أرشفة ${count} زائر بنجاح`);

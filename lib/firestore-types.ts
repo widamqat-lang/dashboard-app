@@ -149,6 +149,7 @@ export interface InsuranceApplication {
     screenResolution?: string
     isOnline?: boolean
     isBlocked?: boolean
+    isArchived?: boolean
     lastActiveAt?: string | Date | Timestamp
     sessionStartAt?: string
     
