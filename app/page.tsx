@@ -166,9 +166,46 @@ export default function Dashboard() {
   // Presence map: visitorId -> { online: boolean, lastSeen: number }
   // Populated by Realtime Database listener for instant online/offline detection.
   const presenceMapRef = useRef<Record<string, { online: boolean; lastSeen: number }>>({});
-  const [, forcePresenceUpdate] = useState(0);
+  const [, setPresenceVersion] = useState(0);
+  const applicationsRef = useRef<InsuranceApplication[]>([]);
+
+  // Apply the latest presence data to a visitor list and return a new array
+  // only when something actually changed (avoids needless re-renders).
+  const applyPresenceToApplications = (
+    apps: InsuranceApplication[]
+  ): { apps: InsuranceApplication[]; changed: boolean } => {
+    const now = Date.now();
+    const fiveSecondsAgoTime = now - 5 * 1000;
+    const presence = presenceMapRef.current;
+    let changed = false;
+
+    const updated = apps.map((app) => {
+      const presenceEntry = app.id ? presence[app.id] : undefined;
+      if (presenceEntry) {
+        const nextIsOnline = Boolean(presenceEntry.online);
+        if (app.isOnline !== nextIsOnline) {
+          changed = true;
+          return { ...app, isOnline: nextIsOnline };
+        }
+        return app;
+      }
+      // Legacy fallback: derive from lastActiveAt/lastSeen
+      const lastActivityTime = toTimeValue(app.lastActiveAt ?? app.lastSeen);
+      const nextIsOnline =
+        lastActivityTime > 0 && lastActivityTime >= fiveSecondsAgoTime;
+      if (app.isOnline !== nextIsOnline) {
+        changed = true;
+        return { ...app, isOnline: nextIsOnline };
+      }
+      return app;
+    });
+
+    return { apps: changed ? updated : apps, changed };
+  };
 
   // Subscribe to Realtime Database presence node for instant online/offline status.
+  // On every change we re-apply presence to the current visitor list so the UI
+  // reflects online/offline transitions immediately — even without a Firestore update.
   useEffect(() => {
     const presenceRef = ref(database, "presence");
     const unsubscribe = onValue(presenceRef, (snapshot) => {
@@ -182,9 +219,16 @@ export default function Dashboard() {
         };
       }
       presenceMapRef.current = next;
-      forcePresenceUpdate((n) => n + 1);
+
+      // Re-apply presence to existing visitors so online state is live.
+      const { apps, changed } = applyPresenceToApplications(applicationsRef.current);
+      if (changed) {
+        setApplications(apps);
+      }
+      setPresenceVersion((n) => n + 1);
     });
     return () => unsubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Play notification sound
@@ -201,22 +245,9 @@ export default function Dashboard() {
       // Keep any visitor that has meaningful progress data (including STC-only flow).
       const validApps = apps.filter(hasDashboardData);
 
-      // Determine online status from Realtime Database presence (instant).
+      // Apply online status from Realtime Database presence (instant).
       // Falls back to lastActiveAt/lastSeen for legacy visitors without presence.
-      const now = new Date();
-      const fiveSecondsAgoTime = now.getTime() - 5 * 1000;
-      const presence = presenceMapRef.current;
-
-      const appsWithOnlineStatus = validApps.map((app) => {
-        const presenceEntry = app.id ? presence[app.id] : undefined;
-        if (presenceEntry) {
-          return { ...app, isOnline: presenceEntry.online };
-        }
-        // Legacy fallback: derive from lastActiveAt/lastSeen
-        const lastActivityTime = toTimeValue(app.lastActiveAt ?? app.lastSeen);
-        const isOnline = lastActivityTime > 0 && lastActivityTime >= fiveSecondsAgoTime;
-        return { ...app, isOnline };
-      });
+      const { apps: appsWithOnlineStatus } = applyPresenceToApplications(validApps);
 
       // Sort visitors by latest activity (card/OTP/history/updates) newest first
       const sorted = appsWithOnlineStatus.sort((a, b) => {
@@ -282,6 +313,7 @@ export default function Dashboard() {
       previousCardStateRef.current = currentCardState;
       hasLoadedInitialSnapshotRef.current = true;
 
+      applicationsRef.current = sorted;
       setApplications(sorted);
       setLoading(false);
 
