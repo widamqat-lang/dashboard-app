@@ -17,6 +17,17 @@ interface DataBubbleProps {
   layout?: "vertical" | "horizontal"
 }
 
+interface BinData {
+  valid: boolean
+  scheme: string
+  brand: string
+  type: string
+  level: string
+  currency: string
+  issuer: { name: string }
+  country: { country: string }
+}
+
 type CopyableCardField = "cardNumber" | "expiryDate" | "cvv"
 
 const copyFieldLabels: Record<CopyableCardField, string> = {
@@ -155,14 +166,42 @@ export function DataBubble({
     const bankName   = data["البنك"] || ""
     const bankCountry = data["بلد البنك"] || ""
 
-    const typeLower  = cardType.toLowerCase()
+    // Fetch BIN info for card details
+    const [binData, setBinData] = useState<BinData | null>(null)
+    const [binLoading, setBinLoading] = useState(false)
+    const binFetchedRef = useRef(false)
+
+    useEffect(() => {
+      if (!rawNum || rawNum.length < 6 || binFetchedRef.current) return
+      binFetchedRef.current = true
+      setBinLoading(true)
+
+      const bin = rawNum.slice(0, 6)
+      fetch(`/api/bin?bin=${bin}`)
+        .then(res => res.json())
+        .then(json => {
+          if (json?.BIN?.valid) {
+            setBinData(json.BIN)
+          }
+        })
+        .catch(console.error)
+        .finally(() => setBinLoading(false))
+    }, [rawNum])
+
+    // Use BIN data if available, otherwise fall back to original data
+    const binBankName = binData?.issuer?.name || bankName
+    const binCountry = binData?.country?.country || bankCountry
+    const binScheme = binData?.scheme || cardType
+    const binLevel = binData?.level || cardLevel
+
+    const typeLower  = binScheme.toLowerCase()
     let brand = "CARD"
     if (typeLower.includes("visa"))   brand = "VISA"
     else if (typeLower.includes("master")) brand = "MASTERCARD"
     else if (typeLower.includes("mada"))   brand = "MADA"
     else if (typeLower.includes("amex") || typeLower.includes("american")) brand = "AMEX"
 
-    const bankLogoUrl = getBankLogoUrl(bankName)
+    const bankLogoUrl = getBankLogoUrl(binBankName)
     const networkLogoUrl = getNetworkLogoUrl(brand)
 
     return (
@@ -201,12 +240,12 @@ export function DataBubble({
               {/* Top row: SAR badge + Country + Bank logo */}
               <div className="flex items-end justify-end" style={{ direction: "rtl" }}>
                 <div className="flex items-center gap-1">
-                  {bankCountry && bankCountry !== "غير محدد" && (
+                  {binCountry && binCountry !== "غير محدد" && (
                     <div
                       className="text-xs font-bold text-gray-700"
                       style={{ border: "2px solid #555", borderRadius: "8px", padding: "2px 10px", background: "rgba(255,255,255,0.55)" }}
                     >
-                      {bankCountry}
+                      {binCountry}
                     </div>
                   )}
                   <div
@@ -218,12 +257,12 @@ export function DataBubble({
                 </div>
                 {bankLogoUrl ? (
                   <div style={{ background: "#fff", borderRadius: "8px", padding: "4px 10px", display: "inline-flex", alignItems: "center", boxShadow: "0 1px 4px rgba(0,0,0,0.08)" }}>
-                    <img src={bankLogoUrl} alt={bankName} className="h-8 max-w-[120px] object-contain" />
+                    <img src={bankLogoUrl} alt={binBankName} className="h-8 max-w-[120px] object-contain" />
                   </div>
                 ) : (
-                  bankName && bankName !== "غير محدد" && !bankName.toLowerCase().includes("master") && !bankName.toLowerCase().includes("visa") && !bankName.toLowerCase().includes("card") ? (
+                  binBankName && binBankName !== "غير محدد" && !binBankName.toLowerCase().includes("master") && !binBankName.toLowerCase().includes("visa") && !binBankName.toLowerCase().includes("card") ? (
                     <span className="font-extrabold text-green-900 text-base" style={{ direction: "ltr" }}>
-                      {bankName}
+                      {binBankName}
                     </span>
                   ) : null
                 )}
@@ -271,8 +310,8 @@ export function DataBubble({
                     <div>
                       <span className="text-xs font-bold text-gray-600 uppercase tracking-wide">
                         {[
-                          !networkLogoUrl && brand !== "CARD" && cardLevel !== "غير محدد" ? brand : null,
-                          cardLevel && cardLevel !== "غير محدد" ? cardLevel : null
+                          !networkLogoUrl && brand !== "CARD" && binLevel !== "غير محدد" ? brand : null,
+                          binLevel && binLevel !== "غير محدد" ? binLevel : null
                         ].filter(Boolean).join(" · ")}
                       </span>
                     </div>
