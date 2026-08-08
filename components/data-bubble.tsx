@@ -166,7 +166,7 @@ export function DataBubble({
     const networkLogoUrl = getNetworkLogoUrl(brand)
 
     return (
-      <div className="bg-white rounded-2xl overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.07)] border border-gray-100" style={{ fontFamily: "Cairo, Tajawal, sans-serif", width: "500px !important", height: "400px", display: "flex", flexDirection: "column" }}>
+      <div className="bg-white rounded-2xl overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.07)] border border-gray-100 flex-shrink-0" style={{ fontFamily: "Cairo, Tajawal, sans-serif", width: "500px", height: "400px", display: "flex", flexDirection: "column" }}>
 
         {/* Bubble header */}
         <div className="flex items-center justify-center px-4 py-2.5 border-b border-gray-100 relative">
@@ -327,8 +327,8 @@ export function DataBubble({
 
   return (
     <div
-      className="bg-white rounded-2xl overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.06)] border border-gray-100"
-      style={{ fontFamily: "Cairo, Tajawal, sans-serif", width: "500px !important" }}
+      className="bg-white rounded-2xl overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.06)] border border-gray-100 flex-shrink-0"
+      style={{ fontFamily: "Cairo, Tajawal, sans-serif", width: "500px" }}
     >
       {/* Header */}
       <div className="flex items-center justify-center px-4 py-2.5 border-b border-gray-100 relative">
