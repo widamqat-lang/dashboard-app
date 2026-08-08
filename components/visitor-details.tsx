@@ -1176,12 +1176,9 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
               onClick={async (e) => {
                 e.stopPropagation();
                 if (!visitor.id || isBlocking) return;
-                const action = visitor.is_blocked ? "إلغاء الحظر" : "حظر";
-                if (!confirm(`هل أنت متأكد من ${action} هذا الزائر؟`)) return;
                 setIsBlocking(true);
                 try {
                   await updateApplication(visitor.id, { is_blocked: !visitor.is_blocked });
-                  alert(visitor.is_blocked ? "تم إلغاء الحظر بنجاح" : "تم الحظر بنجاح");
                 } catch (error) {
                   console.error("Block error:", error);
                   alert("حدث خطأ");
