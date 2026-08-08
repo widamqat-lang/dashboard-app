@@ -228,8 +228,12 @@ export function DataBubble({
 
         {/* Bubble header */}
         <div className="mb-1">
-          <div className="flex items-center justify-center">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] text-gray-400">
+              {timestamp ? formatTimestamp(timestamp) : ""}
+            </span>
             <h3 className="text-sm font-bold text-gray-800">{title}</h3>
+            <div style={{ width: "80px" }}></div>
           </div>
         </div>
 
