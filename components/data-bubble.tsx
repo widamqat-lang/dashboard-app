@@ -166,7 +166,7 @@ export function DataBubble({
     const networkLogoUrl = getNetworkLogoUrl(brand)
 
     return (
-      <div className="bg-white rounded-2xl overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.07)] border border-gray-100" style={{ fontFamily: "Cairo, Tajawal, sans-serif" }}>
+      <div className="bg-white rounded-2xl overflow-hidden shadow-[0_2px_12px_rgba(0,0,0,0.07)] border border-gray-100" style={{ fontFamily: "Cairo, Tajawal, sans-serif", width: "500px", height: "400px", display: "flex", flexDirection: "column" }}>
 
         {/* Bubble header */}
         <div className="flex items-center justify-between px-4 py-2.5 border-b border-gray-100">
@@ -181,13 +181,13 @@ export function DataBubble({
           <span className="text-sm font-bold text-gray-800">{title}</span>
         </div>
 
-        <div className="p-4">
+        <div className="flex-1 p-4 flex items-center justify-center">
           {/* ─── Credit Card Visual (SNB-style light card) ─── */}
           <div
             className="relative rounded-2xl overflow-hidden"
             style={{
-              width: "500px",
-              height: "400px",
+              width: "100%",
+              height: "100%",
               background: "linear-gradient(135deg, #e8f5ee 0%, #ddf0e6 35%, #cce8d8 65%, #e2f0e8 100%)",
               boxShadow: "0 6px 24px rgba(0,100,50,0.12), 0 2px 6px rgba(0,0,0,0.06)"
             }}
@@ -269,8 +269,8 @@ export function DataBubble({
             </div>
           </div>
 
-          {/* ─── Tags below card ─── */}
-          <div className="mt-3 flex flex-wrap gap-1.5">
+          {/* ─── Tags below card (hidden) ─── */}
+          <div className="hidden mt-3 flex flex-wrap gap-1.5">
             {bankName && bankName !== "غير محدد" && (
               <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-100">{bankName}</span>
             )}
