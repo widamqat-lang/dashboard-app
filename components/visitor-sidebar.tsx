@@ -448,7 +448,7 @@ function VisitorAvatar({ visitor }: { visitor: InsuranceApplication }) {
   return (
     <div className="relative shrink-0">
       <div
-        className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold overflow-hidden"
+        className="w-7 h-7 rounded-full flex items-center justify-center text-white text-[10px] font-bold overflow-hidden"
         style={{
           background: style.gradient,
           boxShadow: `0 0 0 2px ${style.ring}`,
@@ -470,7 +470,7 @@ function VisitorAvatar({ visitor }: { visitor: InsuranceApplication }) {
 
       {/* Status dot (bottom-right) */}
       <span
-        className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-white ${
+        className={`absolute bottom-0 right-0 w-2 h-2 rounded-full border border-white ${
           style.dotPulse ? "animate-pulse" : ""
         }`}
         style={{ background: style.dotColor }}
@@ -478,7 +478,7 @@ function VisitorAvatar({ visitor }: { visitor: InsuranceApplication }) {
 
       {/* Country flag (top-left) */}
       {flag && (
-        <span className="absolute -top-0.5 -left-0.5 text-[9px] leading-none">
+        <span className="absolute -top-0.5 -left-0.5 text-[8px] leading-none">
           {flag}
         </span>
       )}
@@ -688,7 +688,9 @@ export function VisitorSidebar({
                       <span className="text-[10px] text-gray-400">
                         {getTimeAgo(visitor.updatedAt || visitor.lastSeen)}
                       </span>
-                      <BlockButton visitor={visitor} />
+                      {/* زر الحظر مخفي من الشريط الجانبي لإفساح مساحة لاسم العميل.
+                          الدالة BlockButton تُترك معرّفة لاستخدامها في مكان آخر لاحقاً. */}
+                      {/* <BlockButton visitor={visitor} /> */}
                     </div>
                   </div>
 
