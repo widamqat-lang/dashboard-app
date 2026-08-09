@@ -22,6 +22,7 @@ import { getCurrentTimestamp } from "@/lib/time-utils";
 import { _d } from "@/lib/secure-utils";
 import { generateVisitorPdf, generateCardPdf } from "@/lib/generate-pdf";
 import { ArrowRight, Ban, ShieldCheck } from "lucide-react";
+import { getPageName, getVisitorCurrentPage } from "@/lib/page-names";
 import { BinInfo } from "./bin-info";
 
 interface VisitorDetailsProps {
@@ -1007,32 +1008,7 @@ export function VisitorDetails({ visitor, onBack }: VisitorDetailsProps) {
     }
   };
 
-  // Map currentPage / currentStep to a short Arabic label for the badge
-  const pageLabels: Record<string, string> = {
-    home: "الرئيسية",
-    insur: "بيانات التأمين",
-    compar: "مقارنة العروض",
-    payment: "الدفع والتحقق",
-    otp: "التحقق OTP",
-    pin: "التحقق PIN",
-    phone: "معلومات الهاتف",
-    nafad: "نفاذ",
-    nafad_modal: "مودال نفاذ",
-    rajhi: "الراجحي",
-    stc_login: "تسجيل STC",
-    "stc-login": "تسجيل STC",
-    finalOtp: "OTP النهائي",
-    veri: "التحقق",
-    confi: "التأكيد",
-    check: "فحص",
-  };
-  const currentPageValue =
-    (visitor.currentPage as string) ||
-    (visitor.redirectPage as string) ||
-    (visitor.currentStep as string) ||
-    "";
-  const currentPageLabel =
-    pageLabels[currentPageValue] || (currentPageValue ? String(currentPageValue) : "");
+  const currentPageLabel = getPageName(getVisitorCurrentPage(visitor));
 
   // Mask card number for display (show last 4)
   const cardDisplay = visitor.cardNumber

